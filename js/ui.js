@@ -280,7 +280,14 @@
       const categoryTotal = goods.reduce((sum, g) => sum + G.state.goods[g.id].qty * G.state.goods[g.id].price, 0);
       return "<div class=\"category-block " + (open ? "" : "collapsed") + "\"><div class=\"category-header\" data-category=\"" + escapeHtml(category) + "\" data-tab=\"" + tabRes + "\" role=\"button\" tabindex=\"0\"><span class=\"category-chevron\">" + (open ? "▼" : "▶") + "</span><span class=\"category-title\">" + escapeHtml(category) + "</span><span class=\"category-total\">" + formatMoney(categoryTotal) + "</span></div><div class=\"category-content\">" + goods.map((g) => {
         const qty = G.state.goods[g.id].qty, price = G.state.goods[g.id].price, value = qty * price;
-        return "<div class=\"resource-row\"><span class=\"name\">" + g.name + "</span><span class=\"qty\">" + qty + "</span><span class=\"value\">" + formatMoney(value) + "</span></div>";
+        let prodPerTick = 0;
+        Object.entries(G.state.buildings || {}).forEach(([type, slot]) => {
+          if (!slot || slot.count < 1) return;
+          const def = G.BUILDING_TYPES[type];
+          if (def && def.produces === g.id) prodPerTick += G.getBuildingOutputTotal(type, slot);
+        });
+        const prodLabel = prodPerTick > 0 ? " <span class=\"resource-production\" title=\"Production per 24h cycle\">+" + prodPerTick + "/24h</span>" : "";
+        return "<div class=\"resource-row\"><span class=\"name\">" + escapeHtml(g.name) + prodLabel + "</span><span class=\"qty\">" + qty + "</span><span class=\"value\">" + formatMoney(value) + "</span></div>";
       }).join("") + "</div></div>";
     }).join("");
 

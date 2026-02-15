@@ -869,6 +869,13 @@ html::-webkit-scrollbar-thumb:hover {
   font-weight: 600;
 }
 
+.resource-row .resource-production {
+  font-weight: 400;
+  font-size: 0.8rem;
+  color: var(--accent);
+  margin-left: 0.35rem;
+}
+
 .resource-row .qty {
   color: var(--accent);
   font-weight: 600;
