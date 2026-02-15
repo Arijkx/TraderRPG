@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wirtschaftssimulation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="game">
+    <header class="header">
+      <div class="player-level-block">
+        <div class="player-level-header">
+          <span class="player-level-label">Level</span>
+          <span id="player-level" class="player-level-value">1</span>
+        </div>
+        <div class="player-level-bar-wrap">
+          <div id="player-level-bar" class="player-level-bar" style="width: 0%"></div>
+        </div>
+        <div class="player-level-xp" id="player-xp-text">0 / 100 XP</div>
+      </div>
+      <div class="stats">
+        <div class="stat money">
+          <span class="label">Geld</span>
+          <span id="money">1.000 $</span>
+        </div>
+        <div class="stat tick">
+          <span class="label">Datum</span>
+          <span id="day">Jahr 1, Tag 1</span>
+        </div>
+        <div class="stat zeit">
+          <span class="label">Zeit</span>
+          <span id="zeit">24 h</span>
+        </div>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button type="button" class="tab active" data-tab="market" role="tab" aria-selected="true">Markt</button>
+      <button type="button" class="tab" data-tab="buildings-shop" role="tab" aria-selected="false">Gebäude kaufen</button>
+      <button type="button" class="tab" data-tab="my-buildings" role="tab" aria-selected="false">Meine Gebäude</button>
+      <button type="button" class="tab" data-tab="resources" role="tab" aria-selected="false">Meine Ressourcen</button>
+      <button type="button" class="tab" data-tab="log" role="tab" aria-selected="false">Log</button>
+    </nav>
+
+    <main class="main">
+      <section id="panel-market" class="panel tab-panel active" role="tabpanel">
+        <div class="panel-top">
+          <h2>Markt – Kaufen & Verkaufen</h2>
+          <div class="panel-search-wrap"><input type="text" class="tab-search" id="search-market" data-tab="market" placeholder="Ressource suchen..." autocomplete="off"></div>
+        </div>
+        <div id="market-list" class="market-list"></div>
+      </section>
+
+      <section id="panel-buildings-shop" class="panel tab-panel" role="tabpanel">
+        <div class="panel-top">
+          <h2>Gebäude kaufen</h2>
+          <div class="panel-search-wrap"><input type="text" class="tab-search" id="search-buildings-shop" data-tab="buildings-shop" placeholder="Gebäude suchen..." autocomplete="off"></div>
+        </div>
+        <div id="buildings-shop" class="buildings-shop"></div>
+      </section>
+
+      <section id="panel-my-buildings" class="panel tab-panel" role="tabpanel">
+        <div class="panel-top">
+          <h2>Meine Gebäude</h2>
+          <div class="panel-search-wrap"><input type="text" class="tab-search" id="search-my-buildings" data-tab="my-buildings" placeholder="Gebäude suchen..." autocomplete="off"></div>
+        </div>
+        <div id="my-buildings" class="my-buildings-list"></div>
+      </section>
+
+      <section id="panel-resources" class="panel tab-panel" role="tabpanel">
+        <div class="panel-top">
+          <h2>Meine Ressourcen</h2>
+          <div class="panel-search-wrap"><input type="text" class="tab-search" id="search-resources" data-tab="resources" placeholder="Ressource suchen..." autocomplete="off"></div>
+        </div>
+        <div id="resources-list" class="resources-list"></div>
+      </section>
+
+      <section id="panel-log" class="panel tab-panel" role="tabpanel">
+        <h2>Log</h2>
+        <div id="log" class="log-content"></div>
+      </section>
+    </main>
+  </div>
+  <script src="game.js"></script>
+</body>
+</html>

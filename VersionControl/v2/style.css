@@ -1,0 +1,606 @@
+:root {
+  --bg: #0f1419;
+  --surface: #1a2332;
+  --surface-hover: #243044;
+  --border: #2d3a4d;
+  --text: #e6edf3;
+  --text-muted: #8b9cb3;
+  --accent: #3fb950;
+  --accent-dim: #238636;
+  --danger: #f85149;
+  --warning: #d29922;
+  --gold: #e3b341;
+  --radius: 8px;
+  --font-mono: "IBM Plex Mono", monospace;
+  --font-sans: "Outfit", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+.game {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.player-level-block {
+  flex: 1;
+  min-width: 0;
+  max-width: 320px;
+}
+
+.player-level-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.player-level-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.player-level-value {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.player-level-bar-wrap {
+  height: 8px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 0.25rem;
+}
+
+.player-level-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+  border-radius: var(--radius);
+  transition: width 0.2s ease;
+}
+
+.player-level-xp {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.stats {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-family: var(--font-mono);
+}
+
+.stat .label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.stat.money #money,
+.stat.tick #day,
+.stat.zeit #zeit {
+  font-size: 1rem;
+}
+
+.stat.money #money {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.stat.tick #day {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.6rem 1rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  margin-bottom: -1px;
+}
+
+.tab:hover {
+  color: var(--text);
+}
+
+.tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.main {
+  display: block;
+}
+
+.tab-panel {
+  display: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+
+.panel-top {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.panel-top h2 {
+  grid-column: 1;
+  justify-self: start;
+  margin-bottom: 0;
+}
+
+.panel-search-wrap {
+  grid-column: 2;
+  justify-self: end;
+}
+
+.panel h2 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tab-search {
+  width: 18rem;
+  min-width: 10rem;
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.tab-search::placeholder {
+  color: var(--text-muted);
+}
+
+.tab-search:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* Kategorien */
+.category-block {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.category-block:last-child {
+  margin-bottom: 0;
+}
+
+.category-block.collapsed .category-content {
+  display: none;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  padding: 0.25rem 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+}
+
+.category-header:hover {
+  color: var(--text);
+}
+
+.category-chevron {
+  display: inline-block;
+  width: 1rem;
+  text-align: center;
+  font-size: 0.65rem;
+}
+
+.category-header .category-title {
+  flex: 1;
+  padding: 0;
+  border: none;
+  margin: 0;
+}
+
+.category-header .category-total {
+  font-family: var(--font-mono);
+  color: var(--gold);
+  font-size: 0.8rem;
+  margin-left: auto;
+}
+
+.category-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.25rem;
+}
+
+/* Markt */
+.market-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.market-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto 1px auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  background: var(--bg);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+
+.market-row .name {
+  font-weight: 600;
+}
+
+.market-row .qty {
+  color: var(--text-muted);
+  min-width: 4ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.market-row .badge-price {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 5ch;
+  min-width: 10ch;
+  box-sizing: border-box;
+  background: var(--border);
+  color: var(--gold);
+  font-weight: 600;
+  padding: 0.2rem 0.25rem;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+}
+
+.market-row-divider {
+  height: 1.5rem;
+  background: var(--border);
+  width: 1px;
+  justify-self: center;
+}
+
+.market-row .actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.btn {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.6rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-buy {
+  background: var(--accent-dim);
+  color: #fff;
+}
+
+.btn-buy:hover {
+  background: var(--accent);
+}
+
+.btn-sell {
+  background: #5a2a2a;
+  color: #f0a0a0;
+}
+
+.btn-sell:hover {
+  background: #6e3333;
+}
+
+.btn-build {
+  background: var(--accent-dim);
+  color: #fff;
+}
+
+.btn-build:hover {
+  background: var(--accent);
+}
+
+.btn-upgrade {
+  background: #2a3a5a;
+  color: #a0c0f0;
+}
+
+.btn-upgrade:hover {
+  background: #3a4a6a;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Gebäude-Shop */
+.buildings-shop {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.income-timer-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.shop-building {
+  display: grid;
+  grid-template-columns: 1fr auto 1px auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  background: var(--bg);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.shop-building .info {
+  font-family: var(--font-mono);
+}
+
+.shop-building .info-name {
+  font-weight: 700;
+}
+
+.shop-building .info-produces {
+  color: var(--accent);
+}
+
+.shop-building .badge-price {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 5ch;
+  box-sizing: border-box;
+  background: var(--border);
+  color: var(--gold);
+  font-weight: 600;
+  padding: 0.2rem 0.35rem;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+}
+
+.shop-building-divider {
+  height: 1.5rem;
+  background: var(--border);
+  width: 1px;
+  justify-self: center;
+}
+
+/* Meine Gebäude */
+.my-buildings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.my-building {
+  display: grid;
+  grid-template-columns: 1fr auto auto 2.75rem auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  background: var(--bg);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  border-left: 3px solid var(--accent);
+}
+
+.my-building .name-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.my-building .name {
+  font-weight: 600;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  padding: 0.2rem 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  border-radius: 5px;
+  line-height: 1.2;
+  box-sizing: border-box;
+}
+
+.badge-count {
+  background: var(--border);
+  color: var(--text);
+}
+
+.badge-level {
+  background: var(--accent-dim);
+  color: #fff;
+}
+
+.my-building .income {
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+
+.my-building .level {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* Meine Ressourcen */
+.resources-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.resource-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 0.85rem;
+  background: var(--bg);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+}
+
+.resource-row .name {
+  font-weight: 600;
+}
+
+.resource-row .qty {
+  color: var(--accent);
+  font-weight: 600;
+  min-width: 4ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.resource-row .value {
+  color: var(--gold);
+  font-weight: 600;
+  min-width: 5ch;
+  text-align: right;
+  border-left: 1px solid var(--border);
+  padding-left: 0.75rem;
+}
+
+/* Log */
+.log-content {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  color: var(--text-muted);
+}
+
+.log-entry {
+  padding: 0.2rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.log-entry:last-child {
+  border-bottom: none;
+}
+
+.log-entry.income {
+  color: var(--accent);
+}
+
+.log-entry.spend {
+  color: var(--danger);
+}
+
+.log-entry.sell {
+  color: var(--warning);
+}
+
+.log-entry .day {
+  color: var(--text-muted);
+  margin-right: 0.5rem;
+}
