@@ -7,6 +7,7 @@
     sellGood: G.sellGood,
     buyBuilding: G.buyBuilding,
     upgradeBuilding: G.upgradeBuilding,
+    investSkillPoint: G.investSkillPoint,
     switchTab: G.switchTab,
     toggleCategory: G.toggleCategory,
     toggleChartExpand: G.toggleChartExpand,

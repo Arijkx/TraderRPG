@@ -261,7 +261,8 @@
     if (levelLabelEl) levelLabelEl.textContent = (playerName && playerName.trim()) ? playerName.trim() : "Level";
     document.getElementById("player-level").textContent = G.state.playerLevel;
     document.getElementById("player-level-bar").style.width = pct + "%";
-    document.getElementById("player-xp-text").textContent = G.state.playerXp + " / " + xpNeeded + " XP";
+    const xpTextEl = document.getElementById("player-xp-text");
+    if (xpTextEl) xpTextEl.textContent = (xpNeeded === Infinity ? "Max level" : G.state.playerXp + " / " + xpNeeded + " XP");
     G.updateZeitDisplay();
 
     const tabMarket = "market";
@@ -279,7 +280,16 @@
       const open = isCategoryOpen(category, tabMarket);
       return "<div class=\"category-block " + (open ? "" : "collapsed") + "\"><div class=\"category-header\" data-category=\"" + escapeHtml(category) + "\" data-tab=\"" + tabMarket + "\" role=\"button\" tabindex=\"0\"><span class=\"badge category-toggle-badge\" title=\"" + (open ? "Close" : "Open") + "\"><span class=\"category-toggle-text\">" + (open ? "Close" : "Open") + "</span></span><span class=\"category-title\">" + escapeHtml(category) + "</span></div><div class=\"category-content\">" + goods.map((g) => {
         const expanded = !!(G.uiState.expandedMarketCharts && G.uiState.expandedMarketCharts[g.id]);
-        return "<div class=\"market-row-wrapper " + (expanded ? "expanded" : "") + "\"><div class=\"market-row\"><span class=\"market-row-name\"><span class=\"name\">" + escapeHtml(g.name) + "</span></span><span class=\"qty\">" + G.state.goods[g.id].qty + "</span><span class=\"market-chart-wrap\" title=\"Price history\">" + getPriceChartSvg(g.id) + "</span><button type=\"button\" class=\"btn btn-chart\" onclick=\"window.game.toggleChartExpand('" + g.id + "')\" title=\"Price chart " + (expanded ? "collapse" : "expand") + "\">View chart</button><span class=\"market-price-wrap\">" + getPriceChangeBadge(g.id) + "<span class=\"badge badge-price\">" + formatMoney(G.state.goods[g.id].price) + "</span></span><div class=\"market-row-divider\"></div><div class=\"actions\"><button class=\"btn btn-buy\" onclick=\"window.game.buyGood('" + g.id + "', 1)\" title=\"Cost: " + escapeHtml(formatMoney(G.state.goods[g.id].price)) + "\">+1</button><button class=\"btn btn-buy\" onclick=\"window.game.buyGood('" + g.id + "', 10)\" title=\"Cost: " + escapeHtml(formatMoney(G.state.goods[g.id].price * 10)) + "\">+10</button><button class=\"btn btn-buy\" onclick=\"window.game.buyGood('" + g.id + "', 100)\" title=\"Cost: " + escapeHtml(formatMoney(G.state.goods[g.id].price * 100)) + "\">+100</button><button class=\"btn btn-sell\" onclick=\"window.game.sellGood('" + g.id + "', 1)\"" + (G.state.goods[g.id].qty < 1 ? " disabled" : "") + ">−1</button><button class=\"btn btn-sell\" onclick=\"window.game.sellGood('" + g.id + "', 10)\"" + (G.state.goods[g.id].qty < 10 ? " disabled" : "") + ">−10</button><button class=\"btn btn-sell\" onclick=\"window.game.sellGood('" + g.id + "', 100)\"" + (G.state.goods[g.id].qty < 100 ? " disabled" : "") + ">−100</button><button class=\"btn btn-sell\" onclick=\"window.game.sellGood('" + g.id + "', 999999999)\"" + (G.state.goods[g.id].qty < 1 ? " disabled" : "") + ">All</button></div></div>" + (expanded ? "<div class=\"market-row-chart-expanded\"><div class=\"market-row-chart-expanded-inner\">" + getPriceChartExpandedSvg(g.id) + "</div></div>" : "") + "</div>";
+        const price = G.state.goods[g.id].price;
+        const discount = G.getBuyDiscount ? G.getBuyDiscount() : 0;
+        const cost1 = price * 1, cost10 = price * 10, cost100 = price * 100;
+        const after1 = discount > 0 ? Math.max(0, cost1 * (1 - discount)) : cost1;
+        const after10 = discount > 0 ? Math.max(0, cost10 * (1 - discount)) : cost10;
+        const after100 = discount > 0 ? Math.max(0, cost100 * (1 - discount)) : cost100;
+        const title1 = discount > 0 ? "Cost: " + formatMoney(after1) + " (Bulk Buyer discount, was " + formatMoney(cost1) + ")" : "Cost: " + formatMoney(cost1);
+        const title10 = discount > 0 ? "Cost: " + formatMoney(after10) + " (Bulk Buyer discount, was " + formatMoney(cost10) + ")" : "Cost: " + formatMoney(cost10);
+        const title100 = discount > 0 ? "Cost: " + formatMoney(after100) + " (Bulk Buyer discount, was " + formatMoney(cost100) + ")" : "Cost: " + formatMoney(cost100);
+        return "<div class=\"market-row-wrapper " + (expanded ? "expanded" : "") + "\"><div class=\"market-row\"><span class=\"market-row-name\"><span class=\"name\">" + escapeHtml(g.name) + "</span></span><span class=\"qty\">" + G.state.goods[g.id].qty + "</span><span class=\"market-chart-wrap\" title=\"Price history\">" + getPriceChartSvg(g.id) + "</span><button type=\"button\" class=\"btn btn-chart\" onclick=\"window.game.toggleChartExpand('" + g.id + "')\" title=\"Price chart " + (expanded ? "collapse" : "expand") + "\">View chart</button><span class=\"market-price-wrap\">" + getPriceChangeBadge(g.id) + "<span class=\"badge badge-price\">" + formatMoney(G.state.goods[g.id].price) + "</span></span><div class=\"market-row-divider\"></div><div class=\"actions\"><button class=\"btn btn-buy\" onclick=\"window.game.buyGood('" + g.id + "', 1)\" title=\"" + escapeHtml(title1) + "\">+1</button><button class=\"btn btn-buy\" onclick=\"window.game.buyGood('" + g.id + "', 10)\" title=\"" + escapeHtml(title10) + "\">+10</button><button class=\"btn btn-buy\" onclick=\"window.game.buyGood('" + g.id + "', 100)\" title=\"" + escapeHtml(title100) + "\">+100</button><button class=\"btn btn-sell\" onclick=\"window.game.sellGood('" + g.id + "', 1)\"" + (G.state.goods[g.id].qty < 1 ? " disabled" : "") + ">−1</button><button class=\"btn btn-sell\" onclick=\"window.game.sellGood('" + g.id + "', 10)\"" + (G.state.goods[g.id].qty < 10 ? " disabled" : "") + ">−10</button><button class=\"btn btn-sell\" onclick=\"window.game.sellGood('" + g.id + "', 100)\"" + (G.state.goods[g.id].qty < 100 ? " disabled" : "") + ">−100</button><button class=\"btn btn-sell\" onclick=\"window.game.sellGood('" + g.id + "', 999999999)\"" + (G.state.goods[g.id].qty < 1 ? " disabled" : "") + ">All</button></div></div>" + (expanded ? "<div class=\"market-row-chart-expanded\"><div class=\"market-row-chart-expanded-inner\">" + getPriceChartExpandedSvg(g.id) + "</div></div>" : "") + "</div>";
       }).join("") + "</div></div>";
     }).join("");
 
@@ -330,6 +340,7 @@
         const open = isCategoryOpen(category, tabMy);
         return "<div class=\"category-block " + (open ? "" : "collapsed") + "\"><div class=\"category-header\" data-category=\"" + escapeHtml(category) + "\" data-tab=\"" + tabMy + "\" role=\"button\" tabindex=\"0\"><span class=\"badge category-toggle-badge\" title=\"" + (open ? "Close" : "Open") + "\"><span class=\"category-toggle-text\">" + (open ? "Close" : "Open") + "</span></span><span class=\"category-title\">" + escapeHtml(category) + "</span></div><div class=\"category-content\">" + buildings.map(({ type, slot, def }) => {
           const output = G.getBuildingOutputTotal(type, slot);
+          const skillBonusPerDay = G.getProductionBonusFlat ? G.getProductionBonusFlat() * slot.count : 0;
           const resName = G.getProducedGoodName(type);
           const upgradeCost = G.getUpgradeCost(type);
           const cost5 = G.getTotalUpgradeCost ? G.getTotalUpgradeCost(type, 5) : Infinity;
@@ -342,7 +353,8 @@
           const upgrade10Disabled = atMax || cost10 === Infinity || cost10 === 0 || G.state.money < cost10;
           const tier = Math.min(10, Math.floor((slot.level || 1) / 10) + 1);
           const tierClass = "badge-tier-" + tier;
-          return "<div class=\"my-building\"><span class=\"name-cell\"><span class=\"badge badge-count\" title=\"Count\">×" + slot.count + "</span><span class=\"name\">" + def.name + "</span></span><span class=\"income\">+" + output + " " + resName + " per day</span><span class=\"level\">" + upgradeLabel + "</span><span class=\"badge badge-level " + tierClass + "\" title=\"Level\">Lv." + slot.level + "</span><span class=\"upgrade-buttons\"><button class=\"btn btn-upgrade\" onclick=\"window.game.upgradeBuilding('" + type + "')\"" + (upgradeDisabled ? " disabled" : "") + (atMax ? " title=\"Maximum level reached\"" : "") + ">Upgrade</button><button class=\"btn btn-upgrade-multi\" onclick=\"window.game.upgradeBuilding('" + type + "', 5)\"" + (upgrade5Disabled ? " disabled" : "") + " title=\"" + (cost5 < Infinity ? formatMoney(cost5) : "") + "\">+5</button><button class=\"btn btn-upgrade-multi\" onclick=\"window.game.upgradeBuilding('" + type + "', 10)\"" + (upgrade10Disabled ? " disabled" : "") + " title=\"" + (cost10 < Infinity ? formatMoney(cost10) : "") + "\">+10</button></span></div>";
+          const incomeStr = "+" + output + " " + resName + " per day" + (skillBonusPerDay > 0 ? " <span class=\"skill-bonus\" title=\"Productivity skill\">(+" + skillBonusPerDay + " from Skill Bonus)</span>" : "");
+          return "<div class=\"my-building\"><span class=\"name-cell\"><span class=\"badge badge-count\" title=\"Count\">×" + slot.count + "</span><span class=\"name\">" + def.name + "</span></span><span class=\"income\">" + incomeStr + "</span><span class=\"level\">" + upgradeLabel + "</span><span class=\"badge badge-level " + tierClass + "\" title=\"Level\">Lv." + slot.level + "</span><span class=\"upgrade-buttons\"><button class=\"btn btn-upgrade\" onclick=\"window.game.upgradeBuilding('" + type + "')\"" + (upgradeDisabled ? " disabled" : "") + (atMax ? " title=\"Maximum level reached\"" : "") + ">Upgrade</button><button class=\"btn btn-upgrade-multi\" onclick=\"window.game.upgradeBuilding('" + type + "', 5)\"" + (upgrade5Disabled ? " disabled" : "") + " title=\"" + (cost5 < Infinity ? formatMoney(cost5) : "") + "\">+5</button><button class=\"btn btn-upgrade-multi\" onclick=\"window.game.upgradeBuilding('" + type + "', 10)\"" + (upgrade10Disabled ? " disabled" : "") + " title=\"" + (cost10 < Infinity ? formatMoney(cost10) : "") + "\">+10</button></span></div>";
         }).join("") + "</div></div>";
       }).join("");
     }
@@ -386,15 +398,40 @@
       return "<div class=\"category-block " + (open ? "" : "collapsed") + "\"><div class=\"category-header\" data-category=\"" + escapeHtml(category) + "\" data-tab=\"" + tabRes + "\" role=\"button\" tabindex=\"0\"><span class=\"badge category-toggle-badge\" title=\"" + (open ? "Close" : "Open") + "\"><span class=\"category-toggle-text\">" + (open ? "Close" : "Open") + "</span></span><span class=\"category-title\">" + escapeHtml(category) + "</span><span class=\"category-total\">" + formatMoney(categoryTotal) + "</span></div><div class=\"category-content\">" + goods.map((g) => {
         const qty = G.state.goods[g.id].qty, price = G.state.goods[g.id].price, value = qty * price;
         let prodPerTick = 0;
+        let prodSkillBonus = 0;
         Object.entries(G.state.buildings || {}).forEach(([type, slot]) => {
           if (!slot || slot.count < 1) return;
           const def = G.BUILDING_TYPES[type];
-          if (def && def.produces === g.id) prodPerTick += G.getBuildingOutputTotal(type, slot);
+          if (def && def.produces === g.id) {
+            prodPerTick += G.getBuildingOutputTotal(type, slot);
+            if (G.getProductionBonusFlat) prodSkillBonus += G.getProductionBonusFlat() * slot.count;
+          }
         });
-        const prodLabel = prodPerTick > 0 ? " <span class=\"resource-production\" title=\"Production per day\">+" + prodPerTick + " per day</span>" : "";
+        const totalProd = prodPerTick + prodSkillBonus;
+        const prodLabel = totalProd > 0 ? " <span class=\"resource-production\" title=\"Production per day\">+" + totalProd + " per day</span>" : "";
         return "<div class=\"resource-row\"><span class=\"name\">" + escapeHtml(g.name) + prodLabel + "</span><span class=\"qty\">" + qty + "</span><span class=\"value\">" + formatMoney(value) + "</span></div>";
       }).join("") + "</div></div>";
     }).join("");
+
+    const skilltreePointsEl = document.getElementById("skilltree-points");
+    const skilltreeListEl = document.getElementById("skilltree-list");
+    if (skilltreePointsEl && skilltreeListEl && G.SKILLS && G.SKILLS.length > 0) {
+      const points = G.state.playerSkillPoints ?? 0;
+      skilltreePointsEl.textContent = "Available skill points: " + points;
+      skilltreePointsEl.className = "skilltree-points";
+      skilltreeListEl.innerHTML = G.SKILLS.map((s) => {
+        const rank = G.getSkillRank(s.id);
+        const atMax = rank >= s.maxRanks;
+        const cost = s.costPerRank ?? 1;
+        const canInvest = points >= cost && !atMax;
+        const isFlatProduction = s.productionFlatPerRank != null;
+        const currentBadgeText = isFlatProduction
+          ? "Current: +" + (rank * (s.productionFlatPerRank || 0)) + " per 24h"
+          : "Current: " + (rank * (s.effectValue || 0) * 100).toFixed(1) + "%";
+        const currentBadge = "<span class=\"badge badge-skill-current\" title=\"Current effect\">" + escapeHtml(currentBadgeText) + "</span>";
+        return "<div class=\"skilltree-item\"><div class=\"skilltree-skill-info\"><span class=\"skilltree-name\">" + escapeHtml(s.name) + "</span><span class=\"skilltree-desc\">" + escapeHtml(s.description) + "</span><span class=\"skilltree-badges\">" + currentBadge + "<span class=\"badge badge-skill-progress\" title=\"Upgrade progress\">" + rank + " / " + s.maxRanks + "</span></span></div><button type=\"button\" class=\"btn btn-skill\" onclick=\"window.game.investSkillPoint('" + s.id + "')\"" + (!canInvest ? " disabled" : "") + " title=\"" + (atMax ? "Max rank" : "Spend " + cost + " point(s)") + "\">" + (atMax ? "Max" : "+1") + "</button></div>";
+      }).join("");
+    }
 
     const achievedSet = new Set(G.state.achievements || []);
     const achievementsList = document.getElementById("achievements-list");

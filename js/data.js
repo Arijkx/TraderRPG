@@ -232,14 +232,27 @@
 
   const BUILDING_CATEGORY_ORDER = ["Agriculture", "Forestry & Fishing", "Mining", "Industry", "Real Estate"];
 
+  /** Skill tree: id, name, description, effectValue per rank (e.g. 0.005 = 0.5%), maxRanks, costPerRank (skill points) */
+  const SKILLS = [
+    { id: "buy_discount", name: "Bulk Buyer", description: "+0.5% discount when buying resources per rank", effectValue: 0.005, maxRanks: 25, costPerRank: 1 },
+    { id: "sell_bonus", name: "Negotiator", description: "+0.5% price when selling per rank", effectValue: 0.005, maxRanks: 20, costPerRank: 1 },
+    { id: "upgrade_discount", name: "Efficient Upgrades", description: "−5% building upgrade cost per rank", effectValue: 0.05, maxRanks: 10, costPerRank: 1 },
+    { id: "building_cost", name: "Investor", description: "−2% building purchase cost per rank", effectValue: 0.02, maxRanks: 20, costPerRank: 1 },
+    { id: "production_bonus", name: "Productivity", description: "+1 production per 24h per rank (all buildings)", effectValue: 0.01, productionFlatPerRank: 1, maxRanks: 10, costPerRank: 1 },
+    { id: "rent_bonus", name: "Landlord", description: "+2% rent income per rank", effectValue: 0.02, maxRanks: 10, costPerRank: 1 },
+    { id: "xp_bonus", name: "Quick Learner", description: "+5% XP gain per rank", effectValue: 0.05, maxRanks: 5, costPerRank: 1 },
+  ];
+
   Object.assign(window.Game, {
     GOODS,
     GOODS_CATEGORY_ORDER,
     BUILDING_TYPES,
     BUILDING_CATEGORY_ORDER,
+    SKILLS,
     INCOME_INTERVAL_SEC: 24,
     XP_PER_DAY: 5,
     MAX_BUILDING_LEVEL: 99,
+    MAX_PLAYER_LEVEL: 100,
     STORAGE_KEY: "wirtschaftssim_save",
     UI_STORAGE_KEY: "wirtschaftssim_ui",
     PLAYER_NAME_STORAGE_KEY: "traderrpg_player_name",

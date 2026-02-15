@@ -24,6 +24,8 @@
     year: 1,
     playerLevel: 1,
     playerXp: 0,
+    playerSkillPoints: 100,
+    playerSkills: {},
     goods: {},
     buildings: {},
     log: [],
@@ -102,6 +104,13 @@
       data.year = typeof data.year === "number" && data.year >= 1 ? data.year : 1;
       data.playerLevel = typeof data.playerLevel === "number" && data.playerLevel >= 1 ? data.playerLevel : 1;
       data.playerXp = typeof data.playerXp === "number" && data.playerXp >= 0 ? data.playerXp : 0;
+      const maxLevel = (typeof G.MAX_PLAYER_LEVEL === "number" && G.MAX_PLAYER_LEVEL >= 1) ? G.MAX_PLAYER_LEVEL : 100;
+      if (data.playerLevel > maxLevel) data.playerLevel = maxLevel;
+      data.playerSkills = data.playerSkills && typeof data.playerSkills === "object" ? data.playerSkills : {};
+      const totalSpent = Object.values(data.playerSkills).reduce((s, r) => s + (typeof r === "number" ? r : 0), 0);
+      if (typeof data.playerSkillPoints !== "number" || data.playerSkillPoints < 0) {
+        data.playerSkillPoints = Math.max(0, data.playerLevel - 1 - totalSpent);
+      }
       data.goods = data.goods || {};
       G.GOODS.forEach((g) => {
         const cur = data.goods[g.id];

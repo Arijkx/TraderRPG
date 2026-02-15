@@ -5,8 +5,54 @@
 
   let lastTickTime = 0;
 
+  const MAX_PLAYER_LEVEL = (typeof G.MAX_PLAYER_LEVEL === "number" && G.MAX_PLAYER_LEVEL >= 1) ? G.MAX_PLAYER_LEVEL : 100;
+
   function getXpForNextLevel(level) {
+    if (level >= MAX_PLAYER_LEVEL) return Infinity;
     return 750 * level;
+  }
+
+  function getSkillRank(skillId) {
+    return Math.max(0, Math.floor(G.state.playerSkills?.[skillId] ?? 0));
+  }
+
+  function getSkillBonus(skillId) {
+    const def = G.SKILLS?.find((s) => s.id === skillId);
+    if (!def) return 0;
+    const rank = getSkillRank(skillId);
+    return rank * (def.effectValue ?? 0);
+  }
+
+  function getBuyDiscount() {
+    return getSkillBonus("buy_discount");
+  }
+  function getSellBonus() {
+    return getSkillBonus("sell_bonus");
+  }
+  function getUpgradeCostDiscount() {
+    return getSkillBonus("upgrade_discount");
+  }
+  function getBuildingCostDiscount() {
+    return getSkillBonus("building_cost");
+  }
+  /** Flat extra production per 24h per rank (integer, no decimals). */
+  function getProductionBonusFlat() {
+    const def = G.SKILLS?.find((s) => s.id === "production_bonus");
+    if (!def || def.productionFlatPerRank == null) return 0;
+    const rank = getSkillRank("production_bonus");
+    return rank * (def.productionFlatPerRank ?? 0);
+  }
+  function getRentBonus() {
+    return getSkillBonus("rent_bonus");
+  }
+  function getXpBonus() {
+    return getSkillBonus("xp_bonus");
+  }
+
+  function addSkillPointOnLevelUp() {
+    if (G.state.playerLevel <= MAX_PLAYER_LEVEL) {
+      G.state.playerSkillPoints = (G.state.playerSkillPoints || 0) + 1;
+    }
   }
 
   function addLog(msg, type) {
@@ -17,13 +63,15 @@
   function applyAchievementReward(money, xp) {
     if (money > 0) G.state.money += money;
     if (xp > 0) {
-      G.state.playerXp += xp;
+      const xpMult = 1 + getXpBonus();
+      G.state.playerXp += xp * xpMult;
       let required = getXpForNextLevel(G.state.playerLevel);
-      while (G.state.playerXp >= required) {
+      while (G.state.playerLevel < MAX_PLAYER_LEVEL && G.state.playerXp >= required) {
         G.state.playerLevel += 1;
         G.state.playerXp -= required;
+        addSkillPointOnLevelUp();
         required = getXpForNextLevel(G.state.playerLevel);
-        addLog("Level up! Now level " + G.state.playerLevel + ".", "income");
+        addLog("Level up! Now level " + G.state.playerLevel + ". +1 skill point.", "income");
       }
     }
   }
@@ -58,11 +106,12 @@
       addLog("New year! Year " + G.state.year + " begins.", "income");
     }
     let required = getXpForNextLevel(G.state.playerLevel);
-    while (G.state.playerXp >= required) {
+    while (G.state.playerLevel < MAX_PLAYER_LEVEL && G.state.playerXp >= required) {
       G.state.playerLevel += 1;
       G.state.playerXp -= required;
+      addSkillPointOnLevelUp();
       required = getXpForNextLevel(G.state.playerLevel);
-      addLog("Level up! Now level " + G.state.playerLevel + ".", "income");
+      addLog("Level up! Now level " + G.state.playerLevel + ". +1 skill point.", "income");
     }
     G.GOODS.forEach((g) => {
       const slot = G.state.goods[g.id];
@@ -82,28 +131,30 @@
       const def = G.BUILDING_TYPES[type];
       if (def.rent) return;
       const perUnit = def.baseOutput + (slot.level - 1) * def.upgradeOutputBonus;
-      const amount = perUnit * slot.count;
+      const flatBonus = getProductionBonusFlat();
+      const amount = Math.max(0, Math.floor((perUnit * slot.count) + flatBonus * slot.count));
       G.state.goods[def.produces].qty += amount;
       produced[def.produces] = (produced[def.produces] || 0) + amount;
       xpFromProduction += amount;
     });
     if (xpFromProduction > 0) {
-      G.state.playerXp += xpFromProduction;
-      while (G.state.playerXp >= required) {
+      G.state.playerXp += xpFromProduction * (1 + getXpBonus());
+      while (G.state.playerLevel < MAX_PLAYER_LEVEL && G.state.playerXp >= required) {
         G.state.playerLevel += 1;
         G.state.playerXp -= required;
+        addSkillPointOnLevelUp();
         required = getXpForNextLevel(G.state.playerLevel);
-        addLog("Level up! Now level " + G.state.playerLevel + ".", "income");
+        addLog("Level up! Now level " + G.state.playerLevel + ". +1 skill point.", "income");
       }
     }
     if (G.state.day > 0 && G.state.day % 7 === 0) {
       let totalRent = 0;
+      const rentMult = 1 + getRentBonus();
       Object.entries(G.state.buildings).forEach(([type, slot]) => {
         if (!slot || slot.count < 1) return;
         const def = G.BUILDING_TYPES[type];
         if (!def.rent) return;
-        const rent = def.rent * slot.count;
-        totalRent += rent;
+        totalRent += def.rent * slot.count * rentMult;
       });
       if (totalRent > 0) {
         G.state.money += totalRent;
@@ -138,7 +189,8 @@
 
   function buyGood(goodId, amount) {
     const g = G.state.goods[goodId];
-    const cost = g.price * amount;
+    const rawCost = g.price * amount;
+    const cost = Math.max(0, rawCost * (1 - getBuyDiscount()));
     if (cost > G.state.money || amount <= 0) return;
     if (!G.state.stats) G.state.stats = { soldOnce: false, boughtOnce: false, upgrades: 0 };
     G.state.stats.boughtOnce = true;
@@ -156,7 +208,7 @@
     if (sellQty <= 0) return;
     if (!G.state.stats) G.state.stats = { soldOnce: false, boughtOnce: false, upgrades: 0 };
     G.state.stats.soldOnce = true;
-    const revenue = g.price * sellQty;
+    const revenue = g.price * sellQty * (1 + getSellBonus());
     G.state.money += revenue;
     g.qty -= sellQty;
     const goodName = G.GOODS.find((x) => x.id === goodId).name;
@@ -169,7 +221,8 @@
   function getBuildingCost(type) {
     const def = G.BUILDING_TYPES[type];
     const count = G.state.buildings[type]?.count || 0;
-    return def.baseCost + count * 4500;
+    const raw = def.baseCost + count * 4500;
+    return Math.max(0, Math.round(raw * (1 - getBuildingCostDiscount())));
   }
 
   function getBuildingMinLevel(type) {
@@ -205,7 +258,8 @@
     if (def.rent) return Infinity;
     const maxLevel = (typeof G.MAX_BUILDING_LEVEL === "number" && G.MAX_BUILDING_LEVEL >= 1) ? G.MAX_BUILDING_LEVEL : 99;
     if (slot.level >= maxLevel) return Infinity;
-    return def.upgradeCostBase * slot.level;
+    const raw = def.upgradeCostBase * slot.level;
+    return Math.max(0, Math.round(raw * (1 - getUpgradeCostDiscount())));
   }
 
   function getTotalUpgradeCost(type, count) {
@@ -219,7 +273,24 @@
     if (remaining <= 0) return Infinity;
     const n = Math.min(count, remaining);
     const L = slot.level;
-    return def.upgradeCostBase * (n * L + (n * (n - 1)) / 2);
+    const raw = def.upgradeCostBase * (n * L + (n * (n - 1)) / 2);
+    return Math.max(0, Math.round(raw * (1 - getUpgradeCostDiscount())));
+  }
+
+  function investSkillPoint(skillId) {
+    const def = G.SKILLS?.find((s) => s.id === skillId);
+    if (!def) return;
+    const rank = getSkillRank(skillId);
+    if (rank >= def.maxRanks) return;
+    const cost = def.costPerRank ?? 1;
+    const points = G.state.playerSkillPoints ?? 0;
+    if (points < cost) return;
+    if (!G.state.playerSkills) G.state.playerSkills = {};
+    G.state.playerSkills[skillId] = rank + 1;
+    G.state.playerSkillPoints = points - cost;
+    addLog("Skill: " + def.name + " rank " + (rank + 1) + "/" + def.maxRanks + ".", "income");
+    G.saveState();
+    if (G.render) G.render();
   }
 
   function upgradeBuilding(type, count) {
@@ -266,6 +337,10 @@
 
   Object.assign(window.Game, {
     getXpForNextLevel,
+    getSkillRank,
+    getProductionBonusFlat,
+    getBuyDiscount,
+    investSkillPoint,
     addLog,
     advanceDay,
     startIncomeTimer,
