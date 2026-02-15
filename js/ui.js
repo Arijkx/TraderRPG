@@ -287,16 +287,42 @@
     const achievedSet = new Set(G.state.achievements || []);
     const achievementsList = document.getElementById("achievements-list");
     const tabAch = "achievements";
+    const ACH_CAT_ORDER = ["First Steps", "Money", "Buildings", "Building Types", "Upgrades", "Level", "Days", "Years", "Resources", "Crypto", "Real Estate", "Collection", "Hoarder", "Other"];
+    function getAchievementCategory(ach) {
+      const id = ach.id;
+      if (id === "erster_verkauf" || id === "erster_kauf" || id === "erstes_gebaeude" || id === "erstes_upgrade") return "First Steps";
+      if (["kleinvieh", "sparer", "fuenftausend", "wohlhabend", "reich", "reicher_mann", "hunderttausend", "fuenfhunderttausend", "millionaer", "zwei_millionen", "fuenf_millionen", "zehn_millionen"].indexOf(id) >= 0 || id.indexOf("geld_") === 0) return "Money";
+      if (id.indexOf("gebaeude_") === 0 || ["baumeister", "zehn_gebaeude", "tycoon", "imperium", "magnat"].indexOf(id) >= 0) return "Buildings";
+      if (id.indexOf("vielfalt_") === 0) return "Building Types";
+      if (id.indexOf("upgrade_") === 0) return "Upgrades";
+      if (id.indexOf("level_") === 0) return "Level";
+      if (["woche", "monat", "hundert_tage", "volles_jahr"].indexOf(id) >= 0 || id.indexOf("tag_") === 0) return "Days";
+      if (id === "ein_jahr" || id.indexOf("jahr_") === 0) return "Years";
+      if (id.indexOf("lagerwert_") === 0) return "Resources";
+      if (id.indexOf("bitcoin_") === 0 || id.indexOf("ethereum_") === 0 || id.indexOf("crypto_") === 0) return "Crypto";
+      if (id.indexOf("real_estate_") === 0 || id.indexOf("rent_") === 0) return "Real Estate";
+      if (id.indexOf("diversified_") === 0) return "Collection";
+      if (id.indexOf("hoarder_") === 0) return "Hoarder";
+      return "Other";
+    }
     if (achievementsList) {
-      const unlockedList = G.ACHIEVEMENTS.filter((ach) => achievedSet.has(ach.id));
-      const lockedList = G.ACHIEVEMENTS.filter((ach) => !achievedSet.has(ach.id));
+      const byCategory = {};
+      G.ACHIEVEMENTS.forEach((ach) => {
+        const cat = getAchievementCategory(ach);
+        if (!byCategory[cat]) byCategory[cat] = [];
+        byCategory[cat].push(ach);
+      });
       const renderAchievement = (ach, unlocked) => {
         const rewards = [ach.rewardMoney && formatMoney(ach.rewardMoney), ach.rewardXp && ach.rewardXp + " XP"].filter(Boolean).join(" + ");
         return "<div class=\"achievement-item " + (unlocked ? "unlocked" : "locked") + "\"><span class=\"achievement-icon\" aria-hidden=\"true\">" + (unlocked ? "✓" : "○") + "</span><div class=\"achievement-body\"><span class=\"achievement-name\">" + escapeHtml(ach.name) + "</span><span class=\"achievement-desc\">" + escapeHtml(ach.desc) + "</span><span class=\"achievement-reward\">Reward: " + rewards + "</span></div></div>";
       };
-      const openCompleted = isCategoryOpen("Completed Achievements", tabAch);
-      const openLocked = isCategoryOpen("Open Achievements", tabAch);
-      achievementsList.innerHTML = "<div class=\"category-block " + (openCompleted ? "" : "collapsed") + "\"><div class=\"category-header\" data-category=\"Completed Achievements\" data-tab=\"" + tabAch + "\" role=\"button\" tabindex=\"0\"><span class=\"category-chevron\">" + (openCompleted ? "▼" : "▶") + "</span><span class=\"category-title\">Completed Achievements</span><span class=\"category-count\">" + unlockedList.length + "</span></div><div class=\"category-content\">" + (unlockedList.length ? unlockedList.map((ach) => renderAchievement(ach, true)).join("") : "<p class=\"achievements-empty\">None yet.</p>") + "</div></div><div class=\"category-block " + (openLocked ? "" : "collapsed") + "\"><div class=\"category-header\" data-category=\"Open Achievements\" data-tab=\"" + tabAch + "\" role=\"button\" tabindex=\"0\"><span class=\"category-chevron\">" + (openLocked ? "▼" : "▶") + "</span><span class=\"category-title\">Open Achievements</span><span class=\"category-count\">" + lockedList.length + "</span></div><div class=\"category-content\">" + (lockedList.length ? lockedList.map((ach) => renderAchievement(ach, false)).join("") : "<p class=\"achievements-empty\">All done!</p>") + "</div></div>";
+      achievementsList.innerHTML = ACH_CAT_ORDER.filter((cat) => byCategory[cat] && byCategory[cat].length > 0).map((category) => {
+        const list = byCategory[category];
+        const unlockedInCat = list.filter((ach) => achievedSet.has(ach.id));
+        const open = isCategoryOpen(category, tabAch);
+        const content = list.map((ach) => renderAchievement(ach, achievedSet.has(ach.id))).join("");
+        return "<div class=\"category-block " + (open ? "" : "collapsed") + "\"><div class=\"category-header\" data-category=\"" + escapeHtml(category) + "\" data-tab=\"" + tabAch + "\" role=\"button\" tabindex=\"0\"><span class=\"category-chevron\">" + (open ? "▼" : "▶") + "</span><span class=\"category-title\">" + escapeHtml(category) + "</span><span class=\"category-count\">" + unlockedInCat.length + " / " + list.length + "</span></div><div class=\"category-content\">" + content + "</div></div>";
+      }).join("");
     }
 
     document.querySelectorAll(".tab-search").forEach((input) => {
