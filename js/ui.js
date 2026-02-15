@@ -11,6 +11,88 @@
     return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
   }
 
+  const TUTORIAL_STEPS = [
+    { tab: "market", target: ".header", title: "Welcome", text: "Here you see your money, the current date (year & day), and your level with XP. A new day runs every " + (G.INCOME_INTERVAL_SEC || 24) + " seconds." },
+    { tab: "market", target: "#panel-market", title: "Market", text: "Buy and sell resources here. Prices change every day. Use +1, +10, +100 to buy and −1, −10, −100 or All to sell. Click \"View chart\" to see price history." },
+    { tab: "buildings-shop", target: "#panel-buildings-shop", title: "Buy Buildings", text: "Buildings produce resources automatically every 24h. Real estate earns rent every 7 days. Buy buildings here to grow your income." },
+    { tab: "my-buildings", target: "#panel-my-buildings", title: "My Buildings", text: "View your production buildings here. Upgrade them to increase output. Each upgrade costs money and raises the building's level." },
+    { tab: "my-real-estate", target: "#panel-my-real-estate", title: "My Real Estate", text: "Properties you buy earn rent every 7 days. They cannot be upgraded. Total rent and the next collection day are shown here." },
+    { tab: "resources", target: "#panel-resources", title: "My Resources", text: "See all your goods, stock, and total value. The +X/24h shows how much each resource is produced per cycle by your buildings." },
+    { tab: "achievements", target: "#panel-achievements", title: "Achievements", text: "Unlock achievements by reaching goals. You earn money and XP as rewards. They are grouped by type." },
+    { tab: "log", target: "#panel-log", title: "Log", text: "The log shows recent events: sales, purchases, building upgrades, rent collected, and level-ups." },
+    { tab: "settings", target: "#panel-settings", title: "Settings", text: "Reset the game to start over, or replay this tutorial anytime. Your progress is saved automatically." },
+  ];
+
+  function startTutorial() {
+    G.uiState.tutorialStep = 1;
+    G.uiState.tutorialCompleted = false;
+    G.saveUiState();
+    G.switchTab(TUTORIAL_STEPS[0].tab);
+    G.render();
+    updateTutorialUI();
+  }
+
+  function endTutorial() {
+    G.uiState.tutorialStep = 0;
+    G.uiState.tutorialCompleted = true;
+    G.saveUiState();
+    const el = document.getElementById("tutorial-overlay");
+    if (el) el.remove();
+    document.querySelectorAll(".tutorial-highlight").forEach((n) => n.classList.remove("tutorial-highlight"));
+    G.render();
+  }
+
+  function tutorialNext() {
+    if (G.uiState.tutorialStep >= TUTORIAL_STEPS.length) {
+      endTutorial();
+      return;
+    }
+    G.uiState.tutorialStep += 1;
+    G.saveUiState();
+    const step = TUTORIAL_STEPS[G.uiState.tutorialStep - 1];
+    G.switchTab(step.tab);
+    G.render();
+    updateTutorialUI();
+  }
+
+  function tutorialPrev() {
+    if (G.uiState.tutorialStep <= 1) return;
+    G.uiState.tutorialStep -= 1;
+    G.saveUiState();
+    const step = TUTORIAL_STEPS[G.uiState.tutorialStep - 1];
+    G.switchTab(step.tab);
+    G.render();
+    updateTutorialUI();
+  }
+
+  function updateTutorialUI() {
+    if (!G.uiState.tutorialStep || G.uiState.tutorialStep < 1) return;
+    document.querySelectorAll(".tutorial-highlight").forEach((n) => n.classList.remove("tutorial-highlight"));
+    const step = TUTORIAL_STEPS[G.uiState.tutorialStep - 1];
+    if (!step) return;
+    G.switchTab(step.tab);
+    const targetEl = document.querySelector(step.target);
+    if (targetEl) {
+      targetEl.classList.add("tutorial-highlight");
+      targetEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+    let overlay = document.getElementById("tutorial-overlay");
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.id = "tutorial-overlay";
+      overlay.className = "tutorial-overlay";
+      document.body.appendChild(overlay);
+    }
+    const stepNum = G.uiState.tutorialStep;
+    const total = TUTORIAL_STEPS.length;
+    const isFirst = stepNum === 1;
+    const isLast = stepNum === total;
+    overlay.innerHTML = "<div class=\"tutorial-backdrop\"></div><div class=\"tutorial-card\"><div class=\"tutorial-card-header\"><span class=\"tutorial-step-num\">" + stepNum + " / " + total + "</span><h3 class=\"tutorial-title\">" + escapeHtml(step.title) + "</h3></div><p class=\"tutorial-text\">" + escapeHtml(step.text) + "</p><div class=\"tutorial-actions\"><button type=\"button\" class=\"btn tutorial-skip\" id=\"tutorial-skip-btn\">Skip</button><div class=\"tutorial-nav\"><button type=\"button\" class=\"btn\" id=\"tutorial-prev-btn\"" + (isFirst ? " disabled" : "") + ">Back</button><button type=\"button\" class=\"btn btn-build\" id=\"tutorial-next-btn\">" + (isLast ? "Finish" : "Next") + "</button></div></div></div>";
+    document.getElementById("tutorial-skip-btn").onclick = endTutorial;
+    document.getElementById("tutorial-prev-btn").onclick = tutorialPrev;
+    document.getElementById("tutorial-next-btn").onclick = tutorialNext;
+  }
+
   function getSearchQuery(tabId) {
     return (G.uiState.searchQueries && G.uiState.searchQueries[tabId]) ? String(G.uiState.searchQueries[tabId]).trim().toLowerCase() : "";
   }
@@ -344,6 +426,8 @@
     if (filterMarketStockEl) filterMarketStockEl.checked = !!G.uiState.marketOnlyWithStock;
 
     document.getElementById("log").innerHTML = G.state.log.map((e) => "<div class=\"log-entry " + e.type + "\"><span class=\"day\">T" + e.day + "</span>" + e.msg + "</div>").join("");
+
+    if (G.uiState.tutorialStep > 0) updateTutorialUI();
   }
 
   function init() {
@@ -397,6 +481,11 @@
     });
     G.render();
     document.body.classList.remove("game-loading");
+
+    const tutorialBtn = document.getElementById("tutorial-btn");
+    if (tutorialBtn) tutorialBtn.addEventListener("click", startTutorial);
+    const replayTutorialBtn = document.getElementById("replay-tutorial-btn");
+    if (replayTutorialBtn) replayTutorialBtn.addEventListener("click", startTutorial);
   }
 
   Object.assign(window.Game, {
@@ -416,5 +505,6 @@
     switchTab,
     render,
     init,
+    startTutorial,
   });
 })();
