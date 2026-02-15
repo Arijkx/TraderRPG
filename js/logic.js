@@ -76,11 +76,26 @@
     Object.entries(G.state.buildings).forEach(([type, slot]) => {
       if (!slot || slot.count < 1) return;
       const def = G.BUILDING_TYPES[type];
+      if (def.rent) return;
       const perUnit = def.baseOutput + (slot.level - 1) * def.upgradeOutputBonus;
       const amount = perUnit * slot.count;
       G.state.goods[def.produces].qty += amount;
       produced[def.produces] = (produced[def.produces] || 0) + amount;
     });
+    if (G.state.day > 0 && G.state.day % 7 === 0) {
+      let totalRent = 0;
+      Object.entries(G.state.buildings).forEach(([type, slot]) => {
+        if (!slot || slot.count < 1) return;
+        const def = G.BUILDING_TYPES[type];
+        if (!def.rent) return;
+        const rent = def.rent * slot.count;
+        totalRent += rent;
+      });
+      if (totalRent > 0) {
+        G.state.money += totalRent;
+        addLog("Rent collected: " + G.formatMoney(totalRent) + " (real estate)", "income");
+      }
+    }
     const producedLines = Object.entries(produced)
       .map(([id, qty]) => qty + " " + G.GOODS.find((g) => g.id === id).name)
       .join(", ");
@@ -145,6 +160,7 @@
   function getBuildingMinLevel(type) {
     const def = G.BUILDING_TYPES[type];
     if (!def) return 1;
+    if (def.rent) return 1;
     if (typeof def.minLevel === "number" && def.minLevel >= 1) return def.minLevel;
     if (type === "farm" || type === "sawmill" || type === "mine") return 1;
     return Math.min(25, 2 + Math.floor(def.baseCost / 12000));
@@ -173,10 +189,13 @@
     const slot = G.state.buildings[type];
     if (!slot) return Infinity;
     const def = G.BUILDING_TYPES[type];
+    if (def.rent) return Infinity;
     return def.upgradeCostBase * slot.level;
   }
 
   function upgradeBuilding(type) {
+    const def = G.BUILDING_TYPES[type];
+    if (def && def.rent) return;
     const slot = G.state.buildings[type];
     if (!slot) return;
     const cost = getUpgradeCost(type);
@@ -194,8 +213,15 @@
 
   function getBuildingOutputTotal(type, slot) {
     const def = G.BUILDING_TYPES[type];
+    if (def.rent) return 0;
     const perUnit = def.baseOutput + (slot.level - 1) * def.upgradeOutputBonus;
     return perUnit * slot.count;
+  }
+
+  function getBuildingRentTotal(type, slot) {
+    const def = G.BUILDING_TYPES[type];
+    if (!def.rent || !slot) return 0;
+    return def.rent * slot.count;
   }
 
   function getProducedGoodName(type) {
@@ -217,6 +243,7 @@
     getUpgradeCost,
     upgradeBuilding,
     getBuildingOutputTotal,
+    getBuildingRentTotal,
     getProducedGoodName,
   });
 })();

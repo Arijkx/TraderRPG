@@ -141,10 +141,11 @@
       if (!slot || slot.count < 1) return;
       const def = G.BUILDING_TYPES[type];
       const cat = def?.category || "Other";
+      if (cat === "Real Estate") return;
       if (!map[cat]) map[cat] = [];
       map[cat].push({ type, slot, def });
     });
-    return G.BUILDING_CATEGORY_ORDER.filter((c) => map[c]).map((c) => ({ category: c, buildings: map[c] }));
+    return G.BUILDING_CATEGORY_ORDER.filter((c) => map[c] && c !== "Real Estate").map((c) => ({ category: c, buildings: map[c] }));
   }
 
   function switchTab(tabId) {
@@ -211,7 +212,10 @@
         const cost = G.getBuildingCost(type);
         const canBuy = G.state.playerLevel >= minLevel && G.state.money >= cost;
         const levelLocked = G.state.playerLevel < minLevel;
-        return "<div class=\"shop-building " + (levelLocked ? "level-locked" : "") + "\"><div class=\"info\"><span class=\"info-name\">" + def.name + "</span> <span class=\"info-produces\">– produces " + def.baseOutput + " " + G.getProducedGoodName(type) + "/tick</span> <span class=\"badge badge-level-req\" title=\"From level " + minLevel + "\">Lv." + minLevel + "</span></div><span class=\"badge badge-price\">" + formatMoney(cost) + "</span><div class=\"shop-building-divider\"></div><button class=\"btn btn-build\" onclick=\"window.game.buyBuilding('" + type + "')\"" + (!canBuy ? " disabled" : "") + (levelLocked ? " title=\"Available from level " + minLevel + "\"" : "") + ">Buy</button></div>";
+        const isRealEstate = !!def.rent;
+        const infoLine = isRealEstate ? ("– Rent " + formatMoney(def.rent) + " / 7 days") : ("– produces " + def.baseOutput + " " + G.getProducedGoodName(type) + "/tick");
+        const levelBadge = isRealEstate ? "" : (" <span class=\"badge badge-level-req\" title=\"From level " + minLevel + "\">Lv." + minLevel + "</span>");
+        return "<div class=\"shop-building " + (levelLocked ? "level-locked" : "") + "\"><div class=\"info\"><span class=\"info-name\">" + def.name + "</span> <span class=\"info-produces\">" + infoLine + "</span>" + levelBadge + "</div><span class=\"badge badge-price\">" + formatMoney(cost) + "</span><div class=\"shop-building-divider\"></div><button class=\"btn btn-build\" onclick=\"window.game.buyBuilding('" + type + "')\"" + (!canBuy ? " disabled" : "") + (levelLocked ? " title=\"Available from level " + minLevel + "\"" : "") + ">Buy</button></div>";
       }).join("") + "</div></div>";
     }).join("");
 
@@ -219,12 +223,14 @@
     const tabMy = "my-buildings";
     const searchMy = getSearchQuery(tabMy);
     const myBuildings = document.getElementById("my-buildings");
+    const myBuildingsCategories = getMyBuildingsByCategory()
+      .map(({ category, buildings }) => ({ category, buildings: searchMy ? buildings.filter(({ def }) => def.name.toLowerCase().includes(searchMy)) : buildings }))
+      .filter(({ buildings }) => buildings.length > 0);
     if (totalBuildingCount === 0) {
       myBuildings.innerHTML = "<p style='color: var(--text-muted); font-size: 0.9rem;'>No buildings yet. Buy some in the \"Buy Buildings\" section.</p>";
+    } else if (myBuildingsCategories.length === 0) {
+      myBuildings.innerHTML = "<p style='color: var(--text-muted); font-size: 0.9rem;'>No production buildings. Your real estate is listed under My Real Estate.</p>";
     } else {
-      const myBuildingsCategories = getMyBuildingsByCategory()
-        .map(({ category, buildings }) => ({ category, buildings: searchMy ? buildings.filter(({ def }) => def.name.toLowerCase().includes(searchMy)) : buildings }))
-        .filter(({ buildings }) => buildings.length > 0);
       myBuildings.innerHTML = myBuildingsCategories.map(({ category, buildings }) => {
         const open = isCategoryOpen(category, tabMy);
         return "<div class=\"category-block " + (open ? "" : "collapsed") + "\"><div class=\"category-header\" data-category=\"" + escapeHtml(category) + "\" data-tab=\"" + tabMy + "\" role=\"button\" tabindex=\"0\"><span class=\"category-chevron\">" + (open ? "▼" : "▶") + "</span><span class=\"category-title\">" + escapeHtml(category) + "</span></div><div class=\"category-content\">" + buildings.map(({ type, slot, def }) => {
@@ -234,6 +240,29 @@
           return "<div class=\"my-building\"><span class=\"name-cell\"><span class=\"badge badge-count\" title=\"Count\">×" + slot.count + "</span><span class=\"name\">" + def.name + "</span></span><span class=\"income\">+" + output + " " + resName + "/tick</span><span class=\"level\">Upgrade: " + formatMoney(upgradeCost) + "</span><span class=\"badge badge-level\" title=\"Level\">Lv." + slot.level + "</span><button class=\"btn btn-upgrade\" onclick=\"window.game.upgradeBuilding('" + type + "')\"" + (G.state.money < upgradeCost ? " disabled" : "") + ">Upgrade</button></div>";
         }).join("") + "</div></div>";
       }).join("");
+    }
+
+    const tabRealEstate = "my-real-estate";
+    const realEstateList = document.getElementById("my-real-estate-list");
+    if (realEstateList) {
+      const realEstateEntries = [];
+      Object.entries(G.state.buildings).forEach(([type, slot]) => {
+        if (!slot || slot.count < 1) return;
+        const def = G.BUILDING_TYPES[type];
+        if (!def || !def.rent) return;
+        realEstateEntries.push({ type, slot, def });
+      });
+      realEstateEntries.sort((a, b) => a.def.name.localeCompare(b.def.name));
+      const daysUntilRent = G.state.day % 7 === 0 ? 7 : (7 - (G.state.day % 7));
+      if (realEstateEntries.length === 0) {
+        realEstateList.innerHTML = "<p class=\"real-estate-empty\">No real estate yet. Buy properties in the &quot;Buy Buildings&quot; tab under Real Estate.</p>";
+      } else {
+        const totalRent = realEstateEntries.reduce((sum, { type, slot }) => sum + G.getBuildingRentTotal(type, slot), 0);
+        realEstateList.innerHTML = "<p class=\"real-estate-summary\">Total rent: " + formatMoney(totalRent) + " every 7 days. Next rent in " + daysUntilRent + " day" + (daysUntilRent === 1 ? "" : "s") + ".</p>" + realEstateEntries.map(({ type, slot, def }) => {
+          const rentTotal = G.getBuildingRentTotal(type, slot);
+          return "<div class=\"real-estate-row\"><span class=\"name-cell\"><span class=\"badge badge-count\" title=\"Count\">×" + slot.count + "</span><span class=\"name\">" + escapeHtml(def.name) + "</span></span><span class=\"rent\">" + formatMoney(rentTotal) + " / 7 days</span></div>";
+        }).join("");
+      }
     }
 
     const tabRes = "resources";

@@ -148,9 +148,28 @@
     polkadotnode: { name: "Polkadot Node", baseCost: 520000, produces: "polkadot", baseOutput: 2, upgradeCostBase: 45000, upgradeOutputBonus: 1, category: "Industry", minLevel: 12 },
     avalanchenode: { name: "Avalanche Node", baseCost: 340000, produces: "avalanche", baseOutput: 3, upgradeCostBase: 30000, upgradeOutputBonus: 1, category: "Industry", minLevel: 11 },
     chainlinknode: { name: "Chainlink Node", baseCost: 195000, produces: "chainlink", baseOutput: 4, upgradeCostBase: 18000, upgradeOutputBonus: 1, category: "Industry", minLevel: 11 },
+    /* Real Estate – rent every 7 days, no upgrade */
+    small_house: { name: "Small House", baseCost: 28000, category: "Real Estate", rent: 180 },
+    cottage: { name: "Cottage", baseCost: 22000, category: "Real Estate", rent: 120 },
+    apartment: { name: "Apartment", baseCost: 45000, category: "Real Estate", rent: 280 },
+    villa: { name: "Villa", baseCost: 185000, category: "Real Estate", rent: 950 },
+    multifamily_house: { name: "Multi-Family House", baseCost: 120000, category: "Real Estate", rent: 620 },
+    penthouse: { name: "Penthouse", baseCost: 420000, category: "Real Estate", rent: 2200 },
+    apartment_block: { name: "Apartment Block", baseCost: 380000, category: "Real Estate", rent: 1900 },
+    swimming_pool: { name: "Swimming Pool", baseCost: 95000, category: "Real Estate", rent: 480 },
+    cinema: { name: "Cinema", baseCost: 240000, category: "Real Estate", rent: 1250 },
+    bank_branch: { name: "Bank Branch", baseCost: 350000, category: "Real Estate", rent: 1800 },
+    office_building: { name: "Office Building", baseCost: 280000, category: "Real Estate", rent: 1400 },
+    hotel: { name: "Hotel", baseCost: 320000, category: "Real Estate", rent: 1650 },
+    shopping_mall: { name: "Shopping Mall", baseCost: 580000, category: "Real Estate", rent: 3000 },
+    parking_garage: { name: "Parking Garage", baseCost: 88000, category: "Real Estate", rent: 420 },
+    restaurant: { name: "Restaurant", baseCost: 75000, category: "Real Estate", rent: 380 },
+    gym: { name: "Gym", baseCost: 65000, category: "Real Estate", rent: 320 },
+    warehouse: { name: "Warehouse", baseCost: 52000, category: "Real Estate", rent: 250 },
+    storage_unit: { name: "Storage Unit", baseCost: 18000, category: "Real Estate", rent: 95 },
   };
 
-  const BUILDING_CATEGORY_ORDER = ["Agriculture", "Forestry & Fishing", "Mining", "Industry"];
+  const BUILDING_CATEGORY_ORDER = ["Agriculture", "Forestry & Fishing", "Mining", "Industry", "Real Estate"];
 
   Object.assign(window.Game, {
     GOODS,

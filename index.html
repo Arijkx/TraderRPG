@@ -42,6 +42,7 @@
       <button type="button" class="tab active" data-tab="market" role="tab" aria-selected="true">Market</button>
       <button type="button" class="tab" data-tab="buildings-shop" role="tab" aria-selected="false">Buy Buildings</button>
       <button type="button" class="tab" data-tab="my-buildings" role="tab" aria-selected="false">My Buildings</button>
+      <button type="button" class="tab" data-tab="my-real-estate" role="tab" aria-selected="false">My Real Estate</button>
       <button type="button" class="tab" data-tab="resources" role="tab" aria-selected="false">My Resources</button>
       <button type="button" class="tab" data-tab="achievements" role="tab" aria-selected="false">Achievements</button>
       <button type="button" class="tab" data-tab="log" role="tab" aria-selected="false">Log</button>
@@ -83,6 +84,14 @@
           <div class="panel-search-wrap"><input type="text" class="tab-search" id="search-my-buildings" data-tab="my-buildings" placeholder="Search building..." autocomplete="off"></div>
         </div>
         <div id="my-buildings" class="my-buildings-list"></div>
+      </section>
+
+      <section id="panel-my-real-estate" class="panel tab-panel" role="tabpanel">
+        <div class="panel-top">
+          <h2>My Real Estate</h2>
+        </div>
+        <p class="real-estate-intro">Rent is collected every 7 days. Buy real estate in the &quot;Buy Buildings&quot; tab under Real Estate.</p>
+        <div id="my-real-estate-list" class="my-real-estate-list"></div>
       </section>
 
       <section id="panel-resources" class="panel tab-panel" role="tabpanel">
