@@ -39,6 +39,7 @@
     resourcesOnlyWithStock: false,
     marketOnlyWithStock: false,
     expandedMarketCharts: {},
+    tabScrollPositions: {},
   };
 
   function initGoods() {
@@ -61,7 +62,7 @@
   function getUiState() {
     try {
       const raw = localStorage.getItem(UI_KEY);
-      if (!raw) return { activeTab: "market", categoriesOpen: {}, searchQueries: { market: "", "buildings-shop": "", "my-buildings": "", resources: "" }, buildingsShopOnlyUnlocked: false, resourcesOnlyWithStock: false, marketOnlyWithStock: false, tutorialStep: 0, tutorialCompleted: false };
+      if (!raw) return { activeTab: "market", categoriesOpen: {}, searchQueries: { market: "", "buildings-shop": "", "my-buildings": "", resources: "" }, buildingsShopOnlyUnlocked: false, resourcesOnlyWithStock: false, marketOnlyWithStock: false, tutorialStep: 0, tutorialCompleted: false, tabScrollPositions: {} };
       const d = JSON.parse(raw);
       return {
         activeTab: d.activeTab || "market",
@@ -72,9 +73,10 @@
         marketOnlyWithStock: d.marketOnlyWithStock === true,
         tutorialStep: typeof d.tutorialStep === "number" ? d.tutorialStep : 0,
         tutorialCompleted: d.tutorialCompleted === true,
+        tabScrollPositions: typeof d.tabScrollPositions === "object" && d.tabScrollPositions !== null ? d.tabScrollPositions : {},
       };
     } catch (e) {
-      return { activeTab: "market", categoriesOpen: {}, searchQueries: { market: "", "buildings-shop": "", "my-buildings": "", resources: "" }, buildingsShopOnlyUnlocked: false, resourcesOnlyWithStock: false, marketOnlyWithStock: false, tutorialStep: 0, tutorialCompleted: false };
+      return { activeTab: "market", categoriesOpen: {}, searchQueries: { market: "", "buildings-shop": "", "my-buildings": "", resources: "" }, buildingsShopOnlyUnlocked: false, resourcesOnlyWithStock: false, marketOnlyWithStock: false, tutorialStep: 0, tutorialCompleted: false, tabScrollPositions: {} };
     }
   }
 

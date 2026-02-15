@@ -231,6 +231,10 @@
   }
 
   function switchTab(tabId) {
+    const prevTab = G.uiState.activeTab;
+    if (prevTab && G.uiState.tabScrollPositions) {
+      G.uiState.tabScrollPositions[prevTab] = window.scrollY ?? document.documentElement.scrollTop ?? 0;
+    }
     G.uiState.activeTab = tabId;
     G.saveUiState();
     document.querySelectorAll(".tab").forEach((t) => {
@@ -241,6 +245,8 @@
       const id = p.id.replace("panel-", "");
       p.classList.toggle("active", id === tabId);
     });
+    const scrollY = (G.uiState.tabScrollPositions && typeof G.uiState.tabScrollPositions[tabId] === "number") ? G.uiState.tabScrollPositions[tabId] : 0;
+    requestAnimationFrame(function () { window.scrollTo(0, scrollY); });
   }
 
   function render() {
