@@ -66,6 +66,9 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 .header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -73,7 +76,11 @@ html::-webkit-scrollbar-thumb:hover {
   gap: 1rem;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
+  padding-top: 0.25rem;
+  margin-top: -0.25rem;
   border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  box-shadow: 0 1px 0 var(--border);
 }
 
 .player-level-block {
