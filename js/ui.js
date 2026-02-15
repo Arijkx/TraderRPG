@@ -248,6 +248,9 @@
     document.getElementById("day").textContent = "Year " + G.state.year + ", Day " + G.state.day;
     const xpNeeded = G.getXpForNextLevel(G.state.playerLevel);
     const pct = xpNeeded > 0 ? Math.min(100, (G.state.playerXp / xpNeeded) * 100) : 0;
+    const playerName = (typeof G.PLAYER_NAME_STORAGE_KEY === "string" && G.PLAYER_NAME_STORAGE_KEY) ? (localStorage.getItem(G.PLAYER_NAME_STORAGE_KEY) || "") : "";
+    const levelLabelEl = document.getElementById("player-level-label");
+    if (levelLabelEl) levelLabelEl.textContent = (playerName && playerName.trim()) ? playerName.trim() : "Level";
     document.getElementById("player-level").textContent = G.state.playerLevel;
     document.getElementById("player-level-bar").style.width = pct + "%";
     document.getElementById("player-xp-text").textContent = G.state.playerXp + " / " + xpNeeded + " XP";
@@ -494,6 +497,18 @@
     if (tutorialBtn) tutorialBtn.addEventListener("click", startTutorial);
     const replayTutorialBtn = document.getElementById("replay-tutorial-btn");
     if (replayTutorialBtn) replayTutorialBtn.addEventListener("click", startTutorial);
+    const saveNameBtn = document.getElementById("save-name-btn");
+    const playerNameInput = document.getElementById("player-name-input");
+    if (saveNameBtn && playerNameInput && G.PLAYER_NAME_STORAGE_KEY) {
+      const saved = localStorage.getItem(G.PLAYER_NAME_STORAGE_KEY) || "";
+      if (saved) playerNameInput.value = saved;
+      saveNameBtn.addEventListener("click", function () {
+        const name = String(playerNameInput.value || "").trim();
+        localStorage.setItem(G.PLAYER_NAME_STORAGE_KEY, name);
+        const labelEl = document.getElementById("player-level-label");
+        if (labelEl) labelEl.textContent = name || "Level";
+      });
+    }
   }
 
   Object.assign(window.Game, {

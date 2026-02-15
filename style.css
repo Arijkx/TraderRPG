@@ -647,6 +647,47 @@ html::-webkit-scrollbar-thumb:hover {
   margin-top: 1rem;
 }
 
+.settings-section {
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-section:last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.settings-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.settings-name-row label {
+  flex-shrink: 0;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.settings-name-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.4rem 0.6rem;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.settings-name-input::placeholder {
+  color: var(--text-muted);
+}
+
 .settings-intro {
   color: var(--text-muted);
   font-size: 0.8rem;

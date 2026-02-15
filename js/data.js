@@ -224,6 +224,7 @@
     MAX_BUILDING_LEVEL: 99,
     STORAGE_KEY: "wirtschaftssim_save",
     UI_STORAGE_KEY: "wirtschaftssim_ui",
+    PLAYER_NAME_STORAGE_KEY: "traderrpg_player_name",
     PRICE_HISTORY_DAYS: 90,
   });
 })();
