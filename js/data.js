@@ -35,6 +35,21 @@
     { id: "titan", name: "Titanium", basePrice: 135, category: "Metals & Ores" },
     { id: "platin", name: "Platinum", basePrice: 200, category: "Metals & Ores" },
     { id: "chrom", name: "Chromium", basePrice: 72, category: "Metals & Ores" },
+    { id: "lanthan", name: "Lanthanum", basePrice: 95, category: "Rare Earths" },
+    { id: "cer", name: "Cerium", basePrice: 88, category: "Rare Earths" },
+    { id: "praseodym", name: "Praseodymium", basePrice: 125, category: "Rare Earths" },
+    { id: "neodym", name: "Neodymium", basePrice: 140, category: "Rare Earths" },
+    { id: "promethium", name: "Promethium", basePrice: 180, category: "Rare Earths" },
+    { id: "samarium", name: "Samarium", basePrice: 110, category: "Rare Earths" },
+    { id: "europium", name: "Europium", basePrice: 165, category: "Rare Earths" },
+    { id: "gadolinium", name: "Gadolinium", basePrice: 118, category: "Rare Earths" },
+    { id: "terbium", name: "Terbium", basePrice: 195, category: "Rare Earths" },
+    { id: "dysprosium", name: "Dysprosium", basePrice: 155, category: "Rare Earths" },
+    { id: "holmium", name: "Holmium", basePrice: 132, category: "Rare Earths" },
+    { id: "erbium", name: "Erbium", basePrice: 122, category: "Rare Earths" },
+    { id: "thulium", name: "Thulium", basePrice: 210, category: "Rare Earths" },
+    { id: "ytterbium", name: "Ytterbium", basePrice: 98, category: "Rare Earths" },
+    { id: "lutetium", name: "Lutetium", basePrice: 225, category: "Rare Earths" },
     { id: "holz", name: "Wood", basePrice: 25, category: "Building Materials" },
     { id: "stein", name: "Stone", basePrice: 35, category: "Building Materials" },
     { id: "lehm", name: "Clay", basePrice: 12, category: "Building Materials" },
@@ -75,7 +90,7 @@
     { id: "chainlink", name: "Chainlink", basePrice: 18, category: "Currencies" },
   ];
 
-  const GOODS_CATEGORY_ORDER = ["Food", "Metals & Ores", "Building Materials", "Energy", "Textiles", "Spices & Luxury", "Currencies"];
+  const GOODS_CATEGORY_ORDER = ["Food", "Metals & Ores", "Rare Earths", "Building Materials", "Energy", "Textiles", "Spices & Luxury", "Currencies"];
 
   const BUILDING_TYPES = {
     farm: { name: "Farm", baseCost: 15000, produces: "weizen", baseOutput: 3, upgradeCostBase: 6000, upgradeOutputBonus: 2, category: "Agriculture" },
@@ -130,6 +145,22 @@
     titanhuette: { name: "Titanium Smelter", baseCost: 68000, produces: "titan", baseOutput: 1, upgradeCostBase: 25000, upgradeOutputBonus: 1, category: "Mining" },
     platinmine: { name: "Platinum Mine", baseCost: 88000, produces: "platin", baseOutput: 1, upgradeCostBase: 32000, upgradeOutputBonus: 1, category: "Mining" },
     chrommine: { name: "Chromium Mine", baseCost: 45000, produces: "chrom", baseOutput: 1, upgradeCostBase: 17000, upgradeOutputBonus: 1, category: "Mining" },
+    /* Rare Earths – Mining */
+    lanthanmine: { name: "Lanthanum Mine", baseCost: 72000, produces: "lanthan", baseOutput: 1, upgradeCostBase: 26000, upgradeOutputBonus: 1, category: "Mining" },
+    cermine: { name: "Cerium Refinery", baseCost: 68000, produces: "cer", baseOutput: 1, upgradeCostBase: 24500, upgradeOutputBonus: 1, category: "Mining" },
+    praseodymmine: { name: "Praseodymium Mine", baseCost: 85000, produces: "praseodym", baseOutput: 1, upgradeCostBase: 30000, upgradeOutputBonus: 1, category: "Mining" },
+    neodymmine: { name: "Neodymium Mine", baseCost: 92000, produces: "neodym", baseOutput: 1, upgradeCostBase: 33000, upgradeOutputBonus: 1, category: "Mining" },
+    promethiummine: { name: "Promethium Refinery", baseCost: 115000, produces: "promethium", baseOutput: 1, upgradeCostBase: 40000, upgradeOutputBonus: 1, category: "Mining" },
+    samariummine: { name: "Samarium Mine", baseCost: 78000, produces: "samarium", baseOutput: 1, upgradeCostBase: 28000, upgradeOutputBonus: 1, category: "Mining" },
+    europiummine: { name: "Europium Refinery", baseCost: 105000, produces: "europium", baseOutput: 1, upgradeCostBase: 37000, upgradeOutputBonus: 1, category: "Mining" },
+    gadoliniummine: { name: "Gadolinium Mine", baseCost: 82000, produces: "gadolinium", baseOutput: 1, upgradeCostBase: 29000, upgradeOutputBonus: 1, category: "Mining" },
+    terbiummine: { name: "Terbium Refinery", baseCost: 125000, produces: "terbium", baseOutput: 1, upgradeCostBase: 44000, upgradeOutputBonus: 1, category: "Mining" },
+    dysprosiummine: { name: "Dysprosium Mine", baseCost: 98000, produces: "dysprosium", baseOutput: 1, upgradeCostBase: 35000, upgradeOutputBonus: 1, category: "Mining" },
+    holmiummine: { name: "Holmium Refinery", baseCost: 88000, produces: "holmium", baseOutput: 1, upgradeCostBase: 31000, upgradeOutputBonus: 1, category: "Mining" },
+    erbiummine: { name: "Erbium Mine", baseCost: 84000, produces: "erbium", baseOutput: 1, upgradeCostBase: 30000, upgradeOutputBonus: 1, category: "Mining" },
+    thuliummine: { name: "Thulium Refinery", baseCost: 132000, produces: "thulium", baseOutput: 1, upgradeCostBase: 47000, upgradeOutputBonus: 1, category: "Mining" },
+    ytterbiummine: { name: "Ytterbium Mine", baseCost: 75000, produces: "ytterbium", baseOutput: 1, upgradeCostBase: 27000, upgradeOutputBonus: 1, category: "Mining" },
+    lutetiummine: { name: "Lutetium Refinery", baseCost: 138000, produces: "lutetium", baseOutput: 1, upgradeCostBase: 49000, upgradeOutputBonus: 1, category: "Mining" },
     zementwerk: { name: "Cement Works", baseCost: 35000, produces: "zement", baseOutput: 2, upgradeCostBase: 13000, upgradeOutputBonus: 1, category: "Industry" },
     marmorsteinbruch: { name: "Marble Quarry", baseCost: 52000, produces: "marmor", baseOutput: 1, upgradeCostBase: 19000, upgradeOutputBonus: 1, category: "Mining" },
     uranmine: { name: "Uranium Mine", baseCost: 78000, produces: "uran", baseOutput: 1, upgradeCostBase: 29000, upgradeOutputBonus: 1, category: "Mining" },
