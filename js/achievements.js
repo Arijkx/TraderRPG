@@ -6,13 +6,6 @@
   const ACHIEVEMENTS = [
     { id: "erster_verkauf", name: "First Sale", desc: "Sell a resource for the first time.", rewardMoney: 50, rewardXp: 10, check: (s) => (s.stats && s.stats.soldOnce) === true },
     { id: "erster_kauf", name: "First Purchase", desc: "Buy a resource for the first time.", rewardMoney: 25, rewardXp: 5, check: (s) => (s.stats && s.stats.boughtOnce) === true },
-    { id: "kleinvieh", name: "Small Change", desc: "Own 500 $.", rewardMoney: 30, rewardXp: 8, check: (s) => s.money >= 500 },
-    { id: "sparer", name: "Saver", desc: "Own 2,000 $.", rewardMoney: 80, rewardXp: 20, check: (s) => s.money >= 2000 },
-    { id: "fuenftausend", name: "5,000 $", desc: "Own 5,000 $.", rewardMoney: 120, rewardXp: 30, check: (s) => s.money >= 5000 },
-    { id: "wohlhabend", name: "Well-off", desc: "Own 10,000 $.", rewardMoney: 250, rewardXp: 60, check: (s) => s.money >= 10000 },
-    { id: "reich", name: "25,000 $", desc: "Own 25,000 $.", rewardMoney: 350, rewardXp: 80, check: (s) => s.money >= 25000 },
-    { id: "reicher_mann", name: "Rich", desc: "Own 50,000 $.", rewardMoney: 500, rewardXp: 120, check: (s) => s.money >= 50000 },
-    { id: "hunderttausend", name: "100,000 $", desc: "Own 100,000 $.", rewardMoney: 800, rewardXp: 180, check: (s) => s.money >= 100000 },
     { id: "fuenfhunderttausend", name: "500,000 $", desc: "Own 500,000 $.", rewardMoney: 1200, rewardXp: 250, check: (s) => s.money >= 500000 },
     { id: "millionaer", name: "Millionaire", desc: "Own 1,000,000 $.", rewardMoney: 2000, rewardXp: 300, check: (s) => s.money >= 1000000 },
     { id: "zwei_millionen", name: "2 Million $", desc: "Own 2,000,000 $.", rewardMoney: 2500, rewardXp: 350, check: (s) => s.money >= 2000000 },

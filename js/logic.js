@@ -6,7 +6,7 @@
   let lastTickTime = 0;
 
   function getXpForNextLevel(level) {
-    return 100 * level;
+    return 500 * level;
   }
 
   function addLog(msg, type) {
