@@ -29,4 +29,14 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
   }
+
+  var resetBtn = document.getElementById("reset-game-btn");
+  if (resetBtn) {
+    resetBtn.addEventListener("click", function () {
+      if (window.confirm("Clear all saved data and restart the game? This cannot be undone.")) {
+        window.Game.clearSaveData();
+        window.location.reload();
+      }
+    });
+  }
 })();

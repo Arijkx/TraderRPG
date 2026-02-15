@@ -82,6 +82,13 @@
     } catch (e) {}
   }
 
+  function clearSaveData() {
+    try {
+      localStorage.removeItem(SAVE_KEY);
+      localStorage.removeItem(UI_KEY);
+    } catch (e) {}
+  }
+
   function loadState() {
     try {
       const raw = localStorage.getItem(SAVE_KEY);
@@ -156,5 +163,6 @@
     saveState,
     getUiState,
     saveUiState,
+    clearSaveData,
   });
 })();

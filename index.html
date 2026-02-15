@@ -45,6 +45,7 @@
       <button type="button" class="tab" data-tab="resources" role="tab" aria-selected="false">My Resources</button>
       <button type="button" class="tab" data-tab="achievements" role="tab" aria-selected="false">Achievements</button>
       <button type="button" class="tab" data-tab="log" role="tab" aria-selected="false">Log</button>
+      <button type="button" class="tab" data-tab="settings" role="tab" aria-selected="false">Settings</button>
     </nav>
 
     <main class="main">
@@ -106,6 +107,13 @@
       <section id="panel-log" class="panel tab-panel" role="tabpanel">
         <h2>Log</h2>
         <div id="log" class="log-content"></div>
+      </section>
+      <section id="panel-settings" class="panel tab-panel" role="tabpanel">
+        <h2>Settings</h2>
+        <div class="settings-content">
+          <p class="settings-intro">Clear all saved game data from this device. The game will restart from the beginning.</p>
+          <button type="button" id="reset-game-btn" class="btn btn-danger">Reset game – clear all data</button>
+        </div>
       </section>
     </main>
   </div>

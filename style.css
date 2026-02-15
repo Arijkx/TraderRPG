@@ -619,6 +619,30 @@ html::-webkit-scrollbar-thumb:hover {
   transform: none;
 }
 
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
+}
+
+.btn-danger:hover {
+  background: #c93c35;
+  filter: brightness(1.05);
+}
+
+/* Settings */
+.settings-content {
+  max-width: 420px;
+  margin-top: 1rem;
+}
+
+.settings-intro {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 1.25rem;
+  line-height: 1.5;
+}
+
 /* Gebäude-Shop */
 .buildings-shop {
   display: flex;
