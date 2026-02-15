@@ -64,6 +64,15 @@
     { id: "truffel", name: "Truffles", basePrice: 280, category: "Spices & Luxury" },
     { id: "muscheln", name: "Shellfish", basePrice: 45, category: "Spices & Luxury" },
     { id: "bitcoin", name: "Bitcoin", basePrice: 25000, category: "Currencies" },
+    { id: "ethereum", name: "Ethereum", basePrice: 2500, category: "Currencies" },
+    { id: "litecoin", name: "Litecoin", basePrice: 95, category: "Currencies" },
+    { id: "ripple", name: "Ripple (XRP)", basePrice: 1, category: "Currencies" },
+    { id: "cardano", name: "Cardano", basePrice: 45, category: "Currencies" },
+    { id: "solana", name: "Solana", basePrice: 180, category: "Currencies" },
+    { id: "dogecoin", name: "Dogecoin", basePrice: 1, category: "Currencies" },
+    { id: "polkadot", name: "Polkadot", basePrice: 75, category: "Currencies" },
+    { id: "avalanche", name: "Avalanche", basePrice: 35, category: "Currencies" },
+    { id: "chainlink", name: "Chainlink", basePrice: 18, category: "Currencies" },
   ];
 
   const GOODS_CATEGORY_ORDER = ["Food", "Metals & Ores", "Building Materials", "Energy", "Textiles", "Spices & Luxury", "Currencies"];
@@ -130,6 +139,15 @@
     truffelsuche: { name: "Truffle Hunt", baseCost: 82000, produces: "truffel", baseOutput: 1, upgradeCostBase: 31000, upgradeOutputBonus: 1, category: "Agriculture" },
     muschelfarm: { name: "Shellfish Farm", baseCost: 24000, produces: "muscheln", baseOutput: 2, upgradeCostBase: 9000, upgradeOutputBonus: 1, category: "Forestry & Fishing" },
     miningfarm: { name: "Mining Farm", baseCost: 1285000, produces: "bitcoin", baseOutput: 1, upgradeCostBase: 100000, upgradeOutputBonus: 1, category: "Industry", minLevel: 10 },
+    ethereumnode: { name: "Ethereum Node", baseCost: 980000, produces: "ethereum", baseOutput: 1, upgradeCostBase: 85000, upgradeOutputBonus: 1, category: "Industry", minLevel: 12 },
+    litecoinmine: { name: "Litecoin Mine", baseCost: 420000, produces: "litecoin", baseOutput: 2, upgradeCostBase: 38000, upgradeOutputBonus: 1, category: "Industry", minLevel: 11 },
+    ripplevalidator: { name: "Ripple Validator", baseCost: 750000, produces: "ripple", baseOutput: 3, upgradeCostBase: 62000, upgradeOutputBonus: 1, category: "Industry", minLevel: 13 },
+    cardanostaking: { name: "Cardano Staking Pool", baseCost: 380000, produces: "cardano", baseOutput: 4, upgradeCostBase: 35000, upgradeOutputBonus: 1, category: "Industry", minLevel: 12 },
+    solanavalidator: { name: "Solana Validator", baseCost: 1100000, produces: "solana", baseOutput: 1, upgradeCostBase: 95000, upgradeOutputBonus: 1, category: "Industry", minLevel: 14 },
+    dogecoinmine: { name: "Dogecoin Mine", baseCost: 280000, produces: "dogecoin", baseOutput: 5, upgradeCostBase: 22000, upgradeOutputBonus: 2, category: "Industry", minLevel: 10 },
+    polkadotnode: { name: "Polkadot Node", baseCost: 520000, produces: "polkadot", baseOutput: 2, upgradeCostBase: 45000, upgradeOutputBonus: 1, category: "Industry", minLevel: 12 },
+    avalanchenode: { name: "Avalanche Node", baseCost: 340000, produces: "avalanche", baseOutput: 3, upgradeCostBase: 30000, upgradeOutputBonus: 1, category: "Industry", minLevel: 11 },
+    chainlinknode: { name: "Chainlink Node", baseCost: 195000, produces: "chainlink", baseOutput: 4, upgradeCostBase: 18000, upgradeOutputBonus: 1, category: "Industry", minLevel: 11 },
   };
 
   const BUILDING_CATEGORY_ORDER = ["Agriculture", "Forestry & Fishing", "Mining", "Industry"];
