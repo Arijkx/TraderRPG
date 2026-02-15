@@ -554,7 +554,7 @@ html::-webkit-scrollbar-thumb:hover {
   align-items: center;
   justify-content: center;
   width: 5ch;
-  min-width: 10ch;
+  min-width: 14ch;
   box-sizing: border-box;
   background: var(--border);
   color: var(--gold);

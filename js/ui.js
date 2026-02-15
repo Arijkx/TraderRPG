@@ -4,7 +4,7 @@
   const G = window.Game;
 
   function formatMoney(n) {
-    return new Intl.NumberFormat("en-US", { style: "decimal", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n) + " $";
+    return new Intl.NumberFormat("en-US", { style: "decimal", minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n) + " $";
   }
 
   function escapeHtml(s) {
@@ -149,7 +149,9 @@
     const days = G.PRICE_HISTORY_DAYS;
     const w = 1040, h = 140, pad = 24;
     const innerW = w - 2 * pad, innerH = h - 2 * pad;
-    const minY = Math.max(1, Math.round(basePrice * 0.5)), maxY = Math.max(1, basePrice * 2), rangeY = maxY - minY || 1;
+    const minY = basePrice < 10 ? 0.01 : Math.max(1, basePrice * 0.5);
+    const maxY = basePrice < 10 ? 10 : Math.max(1, basePrice * 2);
+    const rangeY = maxY - minY || 1;
     const valueToY = (v) => pad + innerH - ((v - minY) / rangeY) * innerH;
     const baselineY = valueToY(basePrice);
     const barGap = 1, barTotalW = innerW / days, barW = Math.max(1, barTotalW - barGap);

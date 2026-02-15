@@ -106,7 +106,7 @@
     { id: "ripple", name: "Ripple (XRP)", basePrice: 1, category: "Currencies" },
     { id: "cardano", name: "Cardano", basePrice: 45, category: "Currencies" },
     { id: "solana", name: "Solana", basePrice: 180, category: "Currencies" },
-    { id: "dogecoin", name: "Dogecoin", basePrice: 1, category: "Currencies" },
+    { id: "dogecoin", name: "Dogecoin", basePrice: 0.5, category: "Currencies" },
     { id: "polkadot", name: "Polkadot", basePrice: 75, category: "Currencies" },
     { id: "avalanche", name: "Avalanche", basePrice: 35, category: "Currencies" },
     { id: "chainlink", name: "Chainlink", basePrice: 18, category: "Currencies" },

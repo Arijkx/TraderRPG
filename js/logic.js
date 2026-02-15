@@ -40,10 +40,14 @@
     });
   }
 
+  function roundPrice(p) {
+    return Math.round(p * 100) / 100;
+  }
+
   function randomWalk(price, rate) {
     if (rate === undefined) rate = 0.1;
-    const change = (Math.random() - 0.48) * rate * price;
-    return Math.max(1, Math.round(price + change));
+    const change = (Math.random() - 0.48) * rate * Math.max(price, 0.5);
+    return Math.max(0.01, roundPrice(price + change));
   }
 
   function advanceDay() {
@@ -64,9 +68,9 @@
       const slot = G.state.goods[g.id];
       slot.previousPrice = slot.price;
       slot.price = randomWalk(slot.price);
-      const minPrice = Math.max(1, Math.round(g.basePrice * 0.5));
-      const maxPrice = Math.max(1, g.basePrice * 2);
-      slot.price = Math.max(minPrice, Math.min(slot.price, maxPrice));
+      const minPrice = g.basePrice < 10 ? 0.01 : Math.max(1, roundPrice(g.basePrice * 0.5));
+      const maxPrice = g.basePrice < 10 ? 10 : Math.max(1, roundPrice(g.basePrice * 2));
+      slot.price = roundPrice(Math.max(minPrice, Math.min(slot.price, maxPrice)));
       if (!slot.priceHistory) slot.priceHistory = [];
       slot.priceHistory.unshift(slot.price);
       if (slot.priceHistory.length > G.PRICE_HISTORY_DAYS) slot.priceHistory.pop();
