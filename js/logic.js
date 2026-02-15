@@ -53,7 +53,6 @@
       G.state.year += 1;
       addLog("New year! Year " + G.state.year + " begins.", "income");
     }
-    G.state.playerXp += G.XP_PER_DAY;
     let required = getXpForNextLevel(G.state.playerLevel);
     while (G.state.playerXp >= required) {
       G.state.playerLevel += 1;
@@ -73,6 +72,7 @@
       if (slot.priceHistory.length > G.PRICE_HISTORY_DAYS) slot.priceHistory.pop();
     });
     const produced = {};
+    let xpFromProduction = 0;
     Object.entries(G.state.buildings).forEach(([type, slot]) => {
       if (!slot || slot.count < 1) return;
       const def = G.BUILDING_TYPES[type];
@@ -81,7 +81,17 @@
       const amount = perUnit * slot.count;
       G.state.goods[def.produces].qty += amount;
       produced[def.produces] = (produced[def.produces] || 0) + amount;
+      xpFromProduction += amount;
     });
+    if (xpFromProduction > 0) {
+      G.state.playerXp += xpFromProduction;
+      while (G.state.playerXp >= required) {
+        G.state.playerLevel += 1;
+        G.state.playerXp -= required;
+        required = getXpForNextLevel(G.state.playerLevel);
+        addLog("Level up! Now level " + G.state.playerLevel + ".", "income");
+      }
+    }
     if (G.state.day > 0 && G.state.day % 7 === 0) {
       let totalRent = 0;
       Object.entries(G.state.buildings).forEach(([type, slot]) => {
@@ -97,9 +107,10 @@
       }
     }
     const producedLines = Object.entries(produced)
-      .map(([id, qty]) => qty + " " + G.GOODS.find((g) => g.id === id).name)
+      .map(([id, qty]) => qty + " " + G.GOODS.find((g) => g.id === id).name + " (+" + qty + " XP)")
       .join(", ");
     if (producedLines) addLog("+" + producedLines + " (buildings)", "income");
+    if (xpFromProduction > 0) addLog("+" + xpFromProduction + " XP (production this day)", "income");
     addLog("Day " + G.state.day + ". Market prices updated.", "");
     checkAchievements();
     lastTickTime = Date.now();
@@ -160,10 +171,8 @@
   function getBuildingMinLevel(type) {
     const def = G.BUILDING_TYPES[type];
     if (!def) return 1;
-    if (def.rent) return 1;
     if (typeof def.minLevel === "number" && def.minLevel >= 1) return def.minLevel;
-    if (type === "farm" || type === "sawmill" || type === "mine") return 1;
-    return Math.min(25, 2 + Math.floor(def.baseCost / 12000));
+    return 1;
   }
 
   function buyBuilding(type) {

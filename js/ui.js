@@ -296,7 +296,7 @@
         const levelLocked = G.state.playerLevel < minLevel;
         const isRealEstate = !!def.rent;
         const infoLine = isRealEstate ? ("– Rent " + formatMoney(def.rent) + " / 7 days") : ("– produces " + def.baseOutput + " " + G.getProducedGoodName(type) + " per day");
-        const levelBadge = isRealEstate ? "" : (" <span class=\"badge badge-level-req\" title=\"From level " + minLevel + "\">Lv." + minLevel + "</span>");
+        const levelBadge = " <span class=\"badge badge-level-req\" title=\"From level " + minLevel + "\">Lv." + minLevel + "</span>";
         return "<div class=\"shop-building " + (levelLocked ? "level-locked" : "") + "\"><div class=\"info\"><span class=\"info-name\">" + def.name + "</span> <span class=\"info-produces\">" + infoLine + "</span>" + levelBadge + "</div><span class=\"badge badge-price\">" + formatMoney(cost) + "</span><div class=\"shop-building-divider\"></div><button class=\"btn btn-build\" onclick=\"window.game.buyBuilding('" + type + "')\"" + (!canBuy ? " disabled" : "") + (levelLocked ? " title=\"Available from level " + minLevel + "\"" : "") + ">Buy</button></div>";
       }).join("") + "</div></div>";
     }).join("");
