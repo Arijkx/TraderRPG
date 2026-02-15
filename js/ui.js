@@ -330,13 +330,17 @@
           const output = G.getBuildingOutputTotal(type, slot);
           const resName = G.getProducedGoodName(type);
           const upgradeCost = G.getUpgradeCost(type);
+          const cost5 = G.getTotalUpgradeCost ? G.getTotalUpgradeCost(type, 5) : Infinity;
+          const cost10 = G.getTotalUpgradeCost ? G.getTotalUpgradeCost(type, 10) : Infinity;
           const maxLevel = (typeof G.MAX_BUILDING_LEVEL === "number" && G.MAX_BUILDING_LEVEL >= 1) ? G.MAX_BUILDING_LEVEL : 99;
           const atMax = (slot.level || 0) >= maxLevel;
           const upgradeLabel = atMax ? "Max" : "Upgrade: " + formatMoney(upgradeCost);
           const upgradeDisabled = atMax || G.state.money < upgradeCost;
+          const upgrade5Disabled = atMax || cost5 === Infinity || cost5 === 0 || G.state.money < cost5;
+          const upgrade10Disabled = atMax || cost10 === Infinity || cost10 === 0 || G.state.money < cost10;
           const tier = Math.min(10, Math.floor((slot.level || 1) / 10) + 1);
           const tierClass = "badge-tier-" + tier;
-          return "<div class=\"my-building\"><span class=\"name-cell\"><span class=\"badge badge-count\" title=\"Count\">×" + slot.count + "</span><span class=\"name\">" + def.name + "</span></span><span class=\"income\">+" + output + " " + resName + " per day</span><span class=\"level\">" + upgradeLabel + "</span><span class=\"badge badge-level " + tierClass + "\" title=\"Level\">Lv." + slot.level + "</span><button class=\"btn btn-upgrade\" onclick=\"window.game.upgradeBuilding('" + type + "')\"" + (upgradeDisabled ? " disabled" : "") + (atMax ? " title=\"Maximum level reached\"" : "") + ">Upgrade</button></div>";
+          return "<div class=\"my-building\"><span class=\"name-cell\"><span class=\"badge badge-count\" title=\"Count\">×" + slot.count + "</span><span class=\"name\">" + def.name + "</span></span><span class=\"income\">+" + output + " " + resName + " per day</span><span class=\"level\">" + upgradeLabel + "</span><span class=\"badge badge-level " + tierClass + "\" title=\"Level\">Lv." + slot.level + "</span><span class=\"upgrade-buttons\"><button class=\"btn btn-upgrade\" onclick=\"window.game.upgradeBuilding('" + type + "')\"" + (upgradeDisabled ? " disabled" : "") + (atMax ? " title=\"Maximum level reached\"" : "") + ">Upgrade</button><button class=\"btn btn-upgrade-multi\" onclick=\"window.game.upgradeBuilding('" + type + "', 5)\"" + (upgrade5Disabled ? " disabled" : "") + " title=\"" + (cost5 < Infinity ? formatMoney(cost5) : "") + "\">+5</button><button class=\"btn btn-upgrade-multi\" onclick=\"window.game.upgradeBuilding('" + type + "', 10)\"" + (upgrade10Disabled ? " disabled" : "") + " title=\"" + (cost10 < Infinity ? formatMoney(cost10) : "") + "\">+10</button></span></div>";
         }).join("") + "</div></div>";
       }).join("");
     }

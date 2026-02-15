@@ -204,21 +204,39 @@
     return def.upgradeCostBase * slot.level;
   }
 
-  function upgradeBuilding(type) {
+  function getTotalUpgradeCost(type, count) {
+    if (!count || count < 1) return 0;
+    const slot = G.state.buildings[type];
+    if (!slot) return Infinity;
+    const def = G.BUILDING_TYPES[type];
+    if (def.rent) return Infinity;
+    const maxLevel = (typeof G.MAX_BUILDING_LEVEL === "number" && G.MAX_BUILDING_LEVEL >= 1) ? G.MAX_BUILDING_LEVEL : 99;
+    const remaining = maxLevel - slot.level;
+    if (remaining <= 0) return Infinity;
+    const n = Math.min(count, remaining);
+    const L = slot.level;
+    return def.upgradeCostBase * (n * L + (n * (n - 1)) / 2);
+  }
+
+  function upgradeBuilding(type, count) {
+    const amount = (typeof count === "number" && count >= 1) ? Math.floor(count) : 1;
     const def = G.BUILDING_TYPES[type];
     if (def && def.rent) return;
     const slot = G.state.buildings[type];
     if (!slot) return;
     const maxLevel = (typeof G.MAX_BUILDING_LEVEL === "number" && G.MAX_BUILDING_LEVEL >= 1) ? G.MAX_BUILDING_LEVEL : 99;
     if (slot.level >= maxLevel) return;
-    const cost = getUpgradeCost(type);
-    if (G.state.money < cost) return;
-    G.state.money -= cost;
-    slot.level += 1;
+    const remaining = maxLevel - slot.level;
+    const n = Math.min(amount, remaining);
+    if (n < 1) return;
+    const totalCost = getTotalUpgradeCost(type, n);
+    if (totalCost === Infinity || G.state.money < totalCost) return;
+    G.state.money -= totalCost;
+    slot.level += n;
     const name = G.BUILDING_TYPES[type].name;
     if (!G.state.stats) G.state.stats = { soldOnce: false, boughtOnce: false, upgrades: 0 };
-    G.state.stats.upgrades = (G.state.stats.upgrades || 0) + 1;
-    addLog(name + " (all " + slot.count + ") upgraded to level " + slot.level + " for " + G.formatMoney(cost), "spend");
+    G.state.stats.upgrades = (G.state.stats.upgrades || 0) + n;
+    addLog(name + " (all " + slot.count + ") upgraded to level " + slot.level + " for " + G.formatMoney(totalCost) + (n > 1 ? " (+" + n + ")" : ""), "spend");
     checkAchievements();
     G.saveState();
     if (G.render) G.render();
@@ -254,6 +272,7 @@
     getBuildingMinLevel,
     buyBuilding,
     getUpgradeCost,
+    getTotalUpgradeCost,
     upgradeBuilding,
     getBuildingOutputTotal,
     getBuildingRentTotal,

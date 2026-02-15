@@ -628,6 +628,24 @@ html::-webkit-scrollbar-thumb:hover {
   background: #3a4a6a;
 }
 
+.my-building .upgrade-buttons {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.my-building .btn-upgrade-multi {
+  min-width: 2.25rem;
+  padding: 0.35rem 0.4rem;
+  font-size: 0.75rem;
+  background: #2a3a5a;
+  color: #a0c0f0;
+}
+
+.my-building .btn-upgrade-multi:hover:not(:disabled) {
+  background: #3a4a6a;
+}
+
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
