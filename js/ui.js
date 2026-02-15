@@ -295,7 +295,7 @@
         const canBuy = G.state.playerLevel >= minLevel && G.state.money >= cost;
         const levelLocked = G.state.playerLevel < minLevel;
         const isRealEstate = !!def.rent;
-        const infoLine = isRealEstate ? ("– Rent " + formatMoney(def.rent) + " / 7 days") : ("– produces " + def.baseOutput + " " + G.getProducedGoodName(type) + "/tick");
+        const infoLine = isRealEstate ? ("– Rent " + formatMoney(def.rent) + " / 7 days") : ("– produces " + def.baseOutput + " " + G.getProducedGoodName(type) + " per day");
         const levelBadge = isRealEstate ? "" : (" <span class=\"badge badge-level-req\" title=\"From level " + minLevel + "\">Lv." + minLevel + "</span>");
         return "<div class=\"shop-building " + (levelLocked ? "level-locked" : "") + "\"><div class=\"info\"><span class=\"info-name\">" + def.name + "</span> <span class=\"info-produces\">" + infoLine + "</span>" + levelBadge + "</div><span class=\"badge badge-price\">" + formatMoney(cost) + "</span><div class=\"shop-building-divider\"></div><button class=\"btn btn-build\" onclick=\"window.game.buyBuilding('" + type + "')\"" + (!canBuy ? " disabled" : "") + (levelLocked ? " title=\"Available from level " + minLevel + "\"" : "") + ">Buy</button></div>";
       }).join("") + "</div></div>";
@@ -319,7 +319,7 @@
           const output = G.getBuildingOutputTotal(type, slot);
           const resName = G.getProducedGoodName(type);
           const upgradeCost = G.getUpgradeCost(type);
-          return "<div class=\"my-building\"><span class=\"name-cell\"><span class=\"badge badge-count\" title=\"Count\">×" + slot.count + "</span><span class=\"name\">" + def.name + "</span></span><span class=\"income\">+" + output + " " + resName + "/tick</span><span class=\"level\">Upgrade: " + formatMoney(upgradeCost) + "</span><span class=\"badge badge-level\" title=\"Level\">Lv." + slot.level + "</span><button class=\"btn btn-upgrade\" onclick=\"window.game.upgradeBuilding('" + type + "')\"" + (G.state.money < upgradeCost ? " disabled" : "") + ">Upgrade</button></div>";
+          return "<div class=\"my-building\"><span class=\"name-cell\"><span class=\"badge badge-count\" title=\"Count\">×" + slot.count + "</span><span class=\"name\">" + def.name + "</span></span><span class=\"income\">+" + output + " " + resName + " per day</span><span class=\"level\">Upgrade: " + formatMoney(upgradeCost) + "</span><span class=\"badge badge-level\" title=\"Level\">Lv." + slot.level + "</span><button class=\"btn btn-upgrade\" onclick=\"window.game.upgradeBuilding('" + type + "')\"" + (G.state.money < upgradeCost ? " disabled" : "") + ">Upgrade</button></div>";
         }).join("") + "</div></div>";
       }).join("");
     }
@@ -368,7 +368,7 @@
           const def = G.BUILDING_TYPES[type];
           if (def && def.produces === g.id) prodPerTick += G.getBuildingOutputTotal(type, slot);
         });
-        const prodLabel = prodPerTick > 0 ? " <span class=\"resource-production\" title=\"Production per 24h cycle\">+" + prodPerTick + "/24h</span>" : "";
+        const prodLabel = prodPerTick > 0 ? " <span class=\"resource-production\" title=\"Production per day\">+" + prodPerTick + " per day</span>" : "";
         return "<div class=\"resource-row\"><span class=\"name\">" + escapeHtml(g.name) + prodLabel + "</span><span class=\"qty\">" + qty + "</span><span class=\"value\">" + formatMoney(value) + "</span></div>";
       }).join("") + "</div></div>";
     }).join("");
