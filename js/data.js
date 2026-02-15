@@ -221,6 +221,7 @@
     BUILDING_CATEGORY_ORDER,
     INCOME_INTERVAL_SEC: 24,
     XP_PER_DAY: 5,
+    MAX_BUILDING_LEVEL: 99,
     STORAGE_KEY: "wirtschaftssim_save",
     UI_STORAGE_KEY: "wirtschaftssim_ui",
     PRICE_HISTORY_DAYS: 90,

@@ -295,9 +295,11 @@
         const canBuy = G.state.playerLevel >= minLevel && G.state.money >= cost;
         const levelLocked = G.state.playerLevel < minLevel;
         const isRealEstate = !!def.rent;
+        const ownedCount = (G.state.buildings[type] && G.state.buildings[type].count) || 0;
+        const ownedBadge = "<span class=\"badge badge-owned\" title=\"Owned\">×" + ownedCount + "</span> ";
         const infoLine = isRealEstate ? ("– Rent " + formatMoney(def.rent) + " / 7 days") : ("– produces " + def.baseOutput + " " + G.getProducedGoodName(type) + " per day");
         const levelBadge = " <span class=\"badge badge-level-req\" title=\"From level " + minLevel + "\">Lv." + minLevel + "</span>";
-        return "<div class=\"shop-building " + (levelLocked ? "level-locked" : "") + "\"><div class=\"info\"><span class=\"info-name\">" + def.name + "</span> <span class=\"info-produces\">" + infoLine + "</span>" + levelBadge + "</div><span class=\"badge badge-price\">" + formatMoney(cost) + "</span><div class=\"shop-building-divider\"></div><button class=\"btn btn-build\" onclick=\"window.game.buyBuilding('" + type + "')\"" + (!canBuy ? " disabled" : "") + (levelLocked ? " title=\"Available from level " + minLevel + "\"" : "") + ">Buy</button></div>";
+        return "<div class=\"shop-building " + (levelLocked ? "level-locked" : "") + "\"><div class=\"info\">" + ownedBadge + "<span class=\"info-name\">" + def.name + "</span> <span class=\"info-produces\">" + infoLine + "</span>" + levelBadge + "</div><span class=\"badge badge-price\">" + formatMoney(cost) + "</span><div class=\"shop-building-divider\"></div><button class=\"btn btn-build\" onclick=\"window.game.buyBuilding('" + type + "')\"" + (!canBuy ? " disabled" : "") + (levelLocked ? " title=\"Available from level " + minLevel + "\"" : "") + ">Buy</button></div>";
       }).join("") + "</div></div>";
     }).join("");
 
@@ -319,7 +321,13 @@
           const output = G.getBuildingOutputTotal(type, slot);
           const resName = G.getProducedGoodName(type);
           const upgradeCost = G.getUpgradeCost(type);
-          return "<div class=\"my-building\"><span class=\"name-cell\"><span class=\"badge badge-count\" title=\"Count\">×" + slot.count + "</span><span class=\"name\">" + def.name + "</span></span><span class=\"income\">+" + output + " " + resName + " per day</span><span class=\"level\">Upgrade: " + formatMoney(upgradeCost) + "</span><span class=\"badge badge-level\" title=\"Level\">Lv." + slot.level + "</span><button class=\"btn btn-upgrade\" onclick=\"window.game.upgradeBuilding('" + type + "')\"" + (G.state.money < upgradeCost ? " disabled" : "") + ">Upgrade</button></div>";
+          const maxLevel = (typeof G.MAX_BUILDING_LEVEL === "number" && G.MAX_BUILDING_LEVEL >= 1) ? G.MAX_BUILDING_LEVEL : 99;
+          const atMax = (slot.level || 0) >= maxLevel;
+          const upgradeLabel = atMax ? "Max" : "Upgrade: " + formatMoney(upgradeCost);
+          const upgradeDisabled = atMax || G.state.money < upgradeCost;
+          const tier = Math.min(10, Math.floor((slot.level || 1) / 10) + 1);
+          const tierClass = "badge-tier-" + tier;
+          return "<div class=\"my-building\"><span class=\"name-cell\"><span class=\"badge badge-count\" title=\"Count\">×" + slot.count + "</span><span class=\"name\">" + def.name + "</span></span><span class=\"income\">+" + output + " " + resName + " per day</span><span class=\"level\">" + upgradeLabel + "</span><span class=\"badge badge-level " + tierClass + "\" title=\"Level\">Lv." + slot.level + "</span><button class=\"btn btn-upgrade\" onclick=\"window.game.upgradeBuilding('" + type + "')\"" + (upgradeDisabled ? " disabled" : "") + (atMax ? " title=\"Maximum level reached\"" : "") + ">Upgrade</button></div>";
         }).join("") + "</div></div>";
       }).join("");
     }

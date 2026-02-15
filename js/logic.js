@@ -199,6 +199,8 @@
     if (!slot) return Infinity;
     const def = G.BUILDING_TYPES[type];
     if (def.rent) return Infinity;
+    const maxLevel = (typeof G.MAX_BUILDING_LEVEL === "number" && G.MAX_BUILDING_LEVEL >= 1) ? G.MAX_BUILDING_LEVEL : 99;
+    if (slot.level >= maxLevel) return Infinity;
     return def.upgradeCostBase * slot.level;
   }
 
@@ -207,6 +209,8 @@
     if (def && def.rent) return;
     const slot = G.state.buildings[type];
     if (!slot) return;
+    const maxLevel = (typeof G.MAX_BUILDING_LEVEL === "number" && G.MAX_BUILDING_LEVEL >= 1) ? G.MAX_BUILDING_LEVEL : 99;
+    if (slot.level >= maxLevel) return;
     const cost = getUpgradeCost(type);
     if (G.state.money < cost) return;
     G.state.money -= cost;
