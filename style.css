@@ -688,6 +688,13 @@ html::-webkit-scrollbar-thumb:hover {
   color: var(--text-muted);
 }
 
+.settings-desc {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin: 0 0 0.75rem 0;
+  line-height: 1.5;
+}
+
 .settings-intro {
   color: var(--text-muted);
   font-size: 0.8rem;
