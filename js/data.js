@@ -28,6 +28,7 @@
     { id: "gold", name: "Gold", basePrice: 120, category: "Metals – Precious" },
     { id: "silber", name: "Silver", basePrice: 95, category: "Metals – Precious" },
     { id: "platin", name: "Platinum", basePrice: 200, category: "Metals – Precious" },
+    { id: "palladium", name: "Palladium", basePrice: 52, category: "Metals – Precious" },
     /* Metals – critical (battery, tech) */
     { id: "erz", name: "Cobalt", basePrice: 52, category: "Metals – Critical" },
     { id: "lithium", name: "Lithium", basePrice: 85, category: "Metals – Critical" },
@@ -168,6 +169,7 @@
     zinkmine: { name: "Zinc Mine", baseCost: 38000, produces: "zink", baseOutput: 2, upgradeCostBase: 14000, upgradeOutputBonus: 1, category: "Mining", minLevel: 8 },
     titanhuette: { name: "Titanium Smelter", baseCost: 68000, produces: "titan", baseOutput: 1, upgradeCostBase: 25000, upgradeOutputBonus: 1, category: "Mining", minLevel: 14 },
     platinmine: { name: "Platinum Mine", baseCost: 88000, produces: "platin", baseOutput: 1, upgradeCostBase: 32000, upgradeOutputBonus: 1, category: "Mining", minLevel: 17 },
+    palladiummine: { name: "Palladium Mine", baseCost: 84000, produces: "palladium", baseOutput: 1, upgradeCostBase: 30000, upgradeOutputBonus: 1, category: "Mining", minLevel: 19 },
     chrommine: { name: "Chromium Mine", baseCost: 45000, produces: "chrom", baseOutput: 1, upgradeCostBase: 17000, upgradeOutputBonus: 1, category: "Mining", minLevel: 10 },
     /* Rare Earths – Mining */
     lanthanmine: { name: "Lanthanum Mine", baseCost: 72000, produces: "lanthan", baseOutput: 1, upgradeCostBase: 26000, upgradeOutputBonus: 1, category: "Mining", minLevel: 15 },
