@@ -332,11 +332,45 @@ html::-webkit-scrollbar-thumb:hover {
   color: var(--text);
 }
 
-.category-chevron {
-  display: inline-block;
-  width: 1rem;
-  text-align: center;
+.category-toggle-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  min-height: 1.3rem;
+  padding: 0.25rem 0.4rem;
   font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--surface-hover);
+  color: var(--accent);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+/* Spezifischer als .badge (Zeile ~917), damit die Mindestbreite greift */
+.category-header .category-toggle-badge {
+  min-width: 10ch;
+}
+
+/* Open (Kategorie zugeklappt): Hover grün */
+.category-block.collapsed .category-header:hover .category-toggle-badge {
+  background: var(--accent-dim);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* Close (Kategorie aufgeklappt): Hover rot */
+.category-block:not(.collapsed) .category-header:hover .category-toggle-badge {
+  background: rgba(248, 81, 73, 0.25);
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.category-toggle-badge .category-toggle-text {
+  line-height: 1;
 }
 
 .category-header .category-title {
