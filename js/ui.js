@@ -4,7 +4,7 @@
   const G = window.Game;
 
   function formatMoney(n) {
-    return new Intl.NumberFormat("de-DE", { style: "decimal", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n) + " $";
+    return new Intl.NumberFormat("en-US", { style: "decimal", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n) + " $";
   }
 
   function escapeHtml(s) {
@@ -38,15 +38,15 @@
     const data = G.state.goods[goodId];
     if (!data || data.previousPrice == null || data.previousPrice === undefined) return "";
     const diff = data.price - data.previousPrice;
-    if (diff > 0) return '<span class="badge badge-price-change badge-up" title="Preis gestiegen">▲</span>';
-    if (diff < 0) return '<span class="badge badge-price-change badge-down" title="Preis gefallen">▼</span>';
-    return '<span class="badge badge-price-change badge-same" title="Preis unverändert">●</span>';
+    if (diff > 0) return '<span class="badge badge-price-change badge-up" title="Price rose">▲</span>';
+    if (diff < 0) return '<span class="badge badge-price-change badge-down" title="Price fell">▼</span>';
+    return '<span class="badge badge-price-change badge-same" title="Price unchanged">●</span>';
   }
 
   function getPriceChartSvg(goodId) {
     const data = G.state.goods[goodId];
     const history = data?.priceHistory || [];
-    if (history.length === 0) return '<span class="price-chart-empty" title="Noch keine Verlaufswerte">—</span>';
+    if (history.length === 0) return '<span class="price-chart-empty" title="No history yet">—</span>';
     const w = 80, h = 28, pad = 2;
     const points = history.slice().reverse();
     const minP = Math.min(...points), maxP = Math.max(...points), range = maxP - minP || 1;
@@ -56,7 +56,7 @@
       const y = pad + innerH - ((p - minP) / range) * innerH;
       return x + "," + y;
     }).join(" ");
-    return "<svg class=\"price-chart-svg\" width=\"" + w + "\" height=\"" + h + "\" viewBox=\"0 0 " + w + " " + h + "\" aria-hidden=\"true\" title=\"Preisverlauf (letzte " + Math.min(n, G.PRICE_HISTORY_DAYS) + " Tage)\"><polyline fill=\"none\" stroke=\"var(--accent)\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" points=\"" + pts + "\"/></svg>";
+    return "<svg class=\"price-chart-svg\" width=\"" + w + "\" height=\"" + h + "\" viewBox=\"0 0 " + w + " " + h + "\" aria-hidden=\"true\" title=\"Price history (last " + Math.min(n, G.PRICE_HISTORY_DAYS) + " days)\"><polyline fill=\"none\" stroke=\"var(--accent)\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" points=\"" + pts + "\"/></svg>";
   }
 
   function getPriceChartExpandedSvg(goodId) {
@@ -73,7 +73,7 @@
     const barGap = 1, barTotalW = innerW / days, barW = Math.max(1, barTotalW - barGap);
     const slots = [];
     for (let i = 0; i < days; i++) slots.push((days - 1 - i) < history.length ? history[days - 1 - i] : null);
-    if (slots.filter((v) => v != null).length === 0) return "<p class=\"chart-expanded-empty\">Noch keine Verlaufswerte.</p>";
+    if (slots.filter((v) => v != null).length === 0) return "<p class=\"chart-expanded-empty\">No history yet.</p>";
     let gridLines = "";
     for (let i = 0; i <= days; i++) {
       const gx = pad + i * barTotalW;
@@ -86,11 +86,11 @@
     for (let i = 0; i < days; i++) {
       const value = slots[i];
       const x = pad + i * barTotalW + barGap / 2;
-      const dayLabel = i === days - 1 ? "Heute" : i === days - 2 ? "Gestern" : "vor " + (days - 1 - i) + " Tagen";
+      const dayLabel = i === days - 1 ? "Today" : i === days - 2 ? "Yesterday" : (days - 1 - i) + " days ago";
       if (value == null) {
-        bars += "<rect x=\"" + x + "\" y=\"" + pad + "\" width=\"" + barW + "\" height=\"" + innerH + "\" fill=\"transparent\"><title>Kein Wert – " + dayLabel + "</title></rect>";
+        bars += "<rect x=\"" + x + "\" y=\"" + pad + "\" width=\"" + barW + "\" height=\"" + innerH + "\" fill=\"transparent\"><title>No value – " + dayLabel + "</title></rect>";
       } else {
-        const title = formatMoney(value) + " – " + dayLabel + (value > basePrice ? " (über Basis)" : value < basePrice ? " (unter Basis)" : " (Basis)");
+        const title = formatMoney(value) + " – " + dayLabel + (value > basePrice ? " (above base)" : value < basePrice ? " (below base)" : " (base)");
         if (value > basePrice) {
           const barTopY = valueToY(value), barHeight = Math.max(1, baselineY - barTopY);
           bars += "<rect class=\"chart-bar chart-bar-up\" x=\"" + x + "\" y=\"" + barTopY + "\" width=\"" + barW + "\" height=\"" + barHeight + "\" fill=\"var(--accent)\"><title>" + escapeHtml(title) + "</title></rect>";
@@ -102,11 +102,11 @@
         }
       }
       const hx = pad + i * barTotalW;
-      const hoverTitle = value == null ? "Kein Wert – " + dayLabel : formatMoney(slots[i]) + " – " + dayLabel + (slots[i] > basePrice ? " (über Basis)" : slots[i] < basePrice ? " (unter Basis)" : " (Basis)");
+      const hoverTitle = value == null ? "No value – " + dayLabel : formatMoney(slots[i]) + " – " + dayLabel + (slots[i] > basePrice ? " (above base)" : slots[i] < basePrice ? " (below base)" : " (base)");
       const hoverClass = value == null ? "chart-bar-hover chart-bar-hover-empty" : value > basePrice ? "chart-bar-hover chart-bar-hover-up" : value < basePrice ? "chart-bar-hover chart-bar-hover-down" : "chart-bar-hover chart-bar-hover-base";
       hoverRects += "<rect x=\"" + hx + "\" y=\"" + pad + "\" width=\"" + barTotalW + "\" height=\"" + innerH + "\" fill=\"transparent\" class=\"" + hoverClass + "\"><title>" + escapeHtml(hoverTitle) + "</title></rect>";
     }
-    return "<svg class=\"price-chart-expanded-svg price-chart-bars\" width=\"" + w + "\" height=\"" + h + "\" viewBox=\"0 0 " + w + " " + h + "\" aria-label=\"Preisverlauf letzte " + days + " Tage (Basis: " + formatMoney(basePrice) + ")\">" + gridLines + baselineLine + bars + hoverRects + "</svg>";
+    return "<svg class=\"price-chart-expanded-svg price-chart-bars\" width=\"" + w + "\" height=\"" + h + "\" viewBox=\"0 0 " + w + " " + h + "\" aria-label=\"Price history last " + days + " days (Base: " + formatMoney(basePrice) + ")\">" + gridLines + baselineLine + bars + hoverRects + "</svg>";
   }
 
   function toggleChartExpand(goodId) {
@@ -118,7 +118,7 @@
   function getGoodsByCategory() {
     const map = {};
     G.GOODS.forEach((g) => {
-      const cat = g.category || "Sonstiges";
+      const cat = g.category || "Other";
       if (!map[cat]) map[cat] = [];
       map[cat].push(g);
     });
@@ -128,7 +128,7 @@
   function getBuildingsByCategory() {
     const map = {};
     Object.entries(G.BUILDING_TYPES).forEach(([type, def]) => {
-      const cat = def.category || "Sonstiges";
+      const cat = def.category || "Other";
       if (!map[cat]) map[cat] = [];
       map[cat].push([type, def]);
     });
@@ -140,7 +140,7 @@
     Object.entries(G.state.buildings).forEach(([type, slot]) => {
       if (!slot || slot.count < 1) return;
       const def = G.BUILDING_TYPES[type];
-      const cat = def?.category || "Sonstiges";
+      const cat = def?.category || "Other";
       if (!map[cat]) map[cat] = [];
       map[cat].push({ type, slot, def });
     });
@@ -162,7 +162,7 @@
 
   function render() {
     document.getElementById("money").textContent = formatMoney(G.state.money);
-    document.getElementById("day").textContent = "Jahr " + G.state.year + ", Tag " + G.state.day;
+    document.getElementById("day").textContent = "Year " + G.state.year + ", Day " + G.state.day;
     const xpNeeded = G.getXpForNextLevel(G.state.playerLevel);
     const pct = xpNeeded > 0 ? Math.min(100, (G.state.playerXp / xpNeeded) * 100) : 0;
     document.getElementById("player-level").textContent = G.state.playerLevel;
@@ -185,7 +185,7 @@
       const open = isCategoryOpen(category, tabMarket);
       return "<div class=\"category-block " + (open ? "" : "collapsed") + "\"><div class=\"category-header\" data-category=\"" + escapeHtml(category) + "\" data-tab=\"" + tabMarket + "\" role=\"button\" tabindex=\"0\"><span class=\"category-chevron\">" + (open ? "▼" : "▶") + "</span><span class=\"category-title\">" + escapeHtml(category) + "</span></div><div class=\"category-content\">" + goods.map((g) => {
         const expanded = !!(G.uiState.expandedMarketCharts && G.uiState.expandedMarketCharts[g.id]);
-        return "<div class=\"market-row-wrapper " + (expanded ? "expanded" : "") + "\"><div class=\"market-row\"><button type=\"button\" class=\"market-row-name-btn\" onclick=\"window.game.toggleChartExpand('" + g.id + "')\" title=\"Preisverlauf " + (expanded ? "einklappen" : "ausklappen") + "\"><span class=\"name\">" + escapeHtml(g.name) + "</span><span class=\"market-row-expand-icon\" aria-hidden=\"true\">" + (expanded ? "▼" : "▶") + "</span></button><span class=\"qty\">" + G.state.goods[g.id].qty + "</span><span class=\"market-chart-wrap\" title=\"Preisverlauf\">" + getPriceChartSvg(g.id) + "</span><span class=\"market-price-wrap\">" + getPriceChangeBadge(g.id) + "<span class=\"badge badge-price\">" + formatMoney(G.state.goods[g.id].price) + "</span></span><div class=\"market-row-divider\"></div><div class=\"actions\"><button class=\"btn btn-buy\" onclick=\"window.game.buyGood('" + g.id + "', 1)\" title=\"Kosten: " + escapeHtml(formatMoney(G.state.goods[g.id].price)) + "\">+1</button><button class=\"btn btn-buy\" onclick=\"window.game.buyGood('" + g.id + "', 10)\" title=\"Kosten: " + escapeHtml(formatMoney(G.state.goods[g.id].price * 10)) + "\">+10</button><button class=\"btn btn-buy\" onclick=\"window.game.buyGood('" + g.id + "', 100)\" title=\"Kosten: " + escapeHtml(formatMoney(G.state.goods[g.id].price * 100)) + "\">+100</button><button class=\"btn btn-sell\" onclick=\"window.game.sellGood('" + g.id + "', 1)\"" + (G.state.goods[g.id].qty < 1 ? " disabled" : "") + ">−1</button><button class=\"btn btn-sell\" onclick=\"window.game.sellGood('" + g.id + "', 10)\"" + (G.state.goods[g.id].qty < 10 ? " disabled" : "") + ">−10</button><button class=\"btn btn-sell\" onclick=\"window.game.sellGood('" + g.id + "', 100)\"" + (G.state.goods[g.id].qty < 100 ? " disabled" : "") + ">−100</button><button class=\"btn btn-sell\" onclick=\"window.game.sellGood('" + g.id + "', 999999999)\"" + (G.state.goods[g.id].qty < 1 ? " disabled" : "") + ">Alles</button></div></div>" + (expanded ? "<div class=\"market-row-chart-expanded\"><div class=\"market-row-chart-expanded-inner\">" + getPriceChartExpandedSvg(g.id) + "</div></div>" : "") + "</div>";
+        return "<div class=\"market-row-wrapper " + (expanded ? "expanded" : "") + "\"><div class=\"market-row\"><button type=\"button\" class=\"market-row-name-btn\" onclick=\"window.game.toggleChartExpand('" + g.id + "')\" title=\"Price chart " + (expanded ? "collapse" : "expand") + "\"><span class=\"name\">" + escapeHtml(g.name) + "</span><span class=\"market-row-expand-icon\" aria-hidden=\"true\">" + (expanded ? "▼" : "▶") + "</span></button><span class=\"qty\">" + G.state.goods[g.id].qty + "</span><span class=\"market-chart-wrap\" title=\"Price history\">" + getPriceChartSvg(g.id) + "</span><span class=\"market-price-wrap\">" + getPriceChangeBadge(g.id) + "<span class=\"badge badge-price\">" + formatMoney(G.state.goods[g.id].price) + "</span></span><div class=\"market-row-divider\"></div><div class=\"actions\"><button class=\"btn btn-buy\" onclick=\"window.game.buyGood('" + g.id + "', 1)\" title=\"Cost: " + escapeHtml(formatMoney(G.state.goods[g.id].price)) + "\">+1</button><button class=\"btn btn-buy\" onclick=\"window.game.buyGood('" + g.id + "', 10)\" title=\"Cost: " + escapeHtml(formatMoney(G.state.goods[g.id].price * 10)) + "\">+10</button><button class=\"btn btn-buy\" onclick=\"window.game.buyGood('" + g.id + "', 100)\" title=\"Cost: " + escapeHtml(formatMoney(G.state.goods[g.id].price * 100)) + "\">+100</button><button class=\"btn btn-sell\" onclick=\"window.game.sellGood('" + g.id + "', 1)\"" + (G.state.goods[g.id].qty < 1 ? " disabled" : "") + ">−1</button><button class=\"btn btn-sell\" onclick=\"window.game.sellGood('" + g.id + "', 10)\"" + (G.state.goods[g.id].qty < 10 ? " disabled" : "") + ">−10</button><button class=\"btn btn-sell\" onclick=\"window.game.sellGood('" + g.id + "', 100)\"" + (G.state.goods[g.id].qty < 100 ? " disabled" : "") + ">−100</button><button class=\"btn btn-sell\" onclick=\"window.game.sellGood('" + g.id + "', 999999999)\"" + (G.state.goods[g.id].qty < 1 ? " disabled" : "") + ">All</button></div></div>" + (expanded ? "<div class=\"market-row-chart-expanded\"><div class=\"market-row-chart-expanded-inner\">" + getPriceChartExpandedSvg(g.id) + "</div></div>" : "") + "</div>";
       }).join("") + "</div></div>";
     }).join("");
 
@@ -204,14 +204,14 @@
         return { category, entries: list };
       })
       .filter(({ entries }) => entries.length > 0);
-    document.getElementById("buildings-shop").innerHTML = "<p class=\"income-timer-hint\">Gebäude produzieren Ressourcen & neuer Tag alle " + G.INCOME_INTERVAL_SEC + " Sek.</p>" + shopCategories.map(({ category, entries }) => {
+    document.getElementById("buildings-shop").innerHTML = "<p class=\"income-timer-hint\">Buildings produce resources & new day every " + G.INCOME_INTERVAL_SEC + " sec.</p>" + shopCategories.map(({ category, entries }) => {
       const open = isCategoryOpen(category, tabShop);
       return "<div class=\"category-block " + (open ? "" : "collapsed") + "\"><div class=\"category-header\" data-category=\"" + escapeHtml(category) + "\" data-tab=\"" + tabShop + "\" role=\"button\" tabindex=\"0\"><span class=\"category-chevron\">" + (open ? "▼" : "▶") + "</span><span class=\"category-title\">" + escapeHtml(category) + "</span></div><div class=\"category-content\">" + entries.map(([type, def]) => {
         const minLevel = G.getBuildingMinLevel(type);
         const cost = G.getBuildingCost(type);
         const canBuy = G.state.playerLevel >= minLevel && G.state.money >= cost;
         const levelLocked = G.state.playerLevel < minLevel;
-        return "<div class=\"shop-building " + (levelLocked ? "level-locked" : "") + "\"><div class=\"info\"><span class=\"info-name\">" + def.name + "</span> <span class=\"info-produces\">– produziert " + def.baseOutput + " " + G.getProducedGoodName(type) + "/Tick</span> <span class=\"badge badge-level-req\" title=\"Ab Level " + minLevel + "\">Lv." + minLevel + "</span></div><span class=\"badge badge-price\">" + formatMoney(cost) + "</span><div class=\"shop-building-divider\"></div><button class=\"btn btn-build\" onclick=\"window.game.buyBuilding('" + type + "')\"" + (!canBuy ? " disabled" : "") + (levelLocked ? " title=\"Erst ab Level " + minLevel + " verfügbar\"" : "") + ">Kaufen</button></div>";
+        return "<div class=\"shop-building " + (levelLocked ? "level-locked" : "") + "\"><div class=\"info\"><span class=\"info-name\">" + def.name + "</span> <span class=\"info-produces\">– produces " + def.baseOutput + " " + G.getProducedGoodName(type) + "/tick</span> <span class=\"badge badge-level-req\" title=\"From level " + minLevel + "\">Lv." + minLevel + "</span></div><span class=\"badge badge-price\">" + formatMoney(cost) + "</span><div class=\"shop-building-divider\"></div><button class=\"btn btn-build\" onclick=\"window.game.buyBuilding('" + type + "')\"" + (!canBuy ? " disabled" : "") + (levelLocked ? " title=\"Available from level " + minLevel + "\"" : "") + ">Buy</button></div>";
       }).join("") + "</div></div>";
     }).join("");
 
@@ -220,7 +220,7 @@
     const searchMy = getSearchQuery(tabMy);
     const myBuildings = document.getElementById("my-buildings");
     if (totalBuildingCount === 0) {
-      myBuildings.innerHTML = "<p style='color: var(--text-muted); font-size: 0.9rem;'>Noch keine Gebäude. Kaufe welche im Bereich „Gebäude kaufen“.</p>";
+      myBuildings.innerHTML = "<p style='color: var(--text-muted); font-size: 0.9rem;'>No buildings yet. Buy some in the \"Buy Buildings\" section.</p>";
     } else {
       const myBuildingsCategories = getMyBuildingsByCategory()
         .map(({ category, buildings }) => ({ category, buildings: searchMy ? buildings.filter(({ def }) => def.name.toLowerCase().includes(searchMy)) : buildings }))
@@ -231,7 +231,7 @@
           const output = G.getBuildingOutputTotal(type, slot);
           const resName = G.getProducedGoodName(type);
           const upgradeCost = G.getUpgradeCost(type);
-          return "<div class=\"my-building\"><span class=\"name-cell\"><span class=\"badge badge-count\" title=\"Anzahl\">×" + slot.count + "</span><span class=\"name\">" + def.name + "</span></span><span class=\"income\">+" + output + " " + resName + "/Tick</span><span class=\"level\">Upgrade: " + formatMoney(upgradeCost) + "</span><span class=\"badge badge-level\" title=\"Stufe\">Lv." + slot.level + "</span><button class=\"btn btn-upgrade\" onclick=\"window.game.upgradeBuilding('" + type + "')\"" + (G.state.money < upgradeCost ? " disabled" : "") + ">Upgrade</button></div>";
+          return "<div class=\"my-building\"><span class=\"name-cell\"><span class=\"badge badge-count\" title=\"Count\">×" + slot.count + "</span><span class=\"name\">" + def.name + "</span></span><span class=\"income\">+" + output + " " + resName + "/tick</span><span class=\"level\">Upgrade: " + formatMoney(upgradeCost) + "</span><span class=\"badge badge-level\" title=\"Level\">Lv." + slot.level + "</span><button class=\"btn btn-upgrade\" onclick=\"window.game.upgradeBuilding('" + type + "')\"" + (G.state.money < upgradeCost ? " disabled" : "") + ">Upgrade</button></div>";
         }).join("") + "</div></div>";
       }).join("");
     }
@@ -263,11 +263,11 @@
       const lockedList = G.ACHIEVEMENTS.filter((ach) => !achievedSet.has(ach.id));
       const renderAchievement = (ach, unlocked) => {
         const rewards = [ach.rewardMoney && formatMoney(ach.rewardMoney), ach.rewardXp && ach.rewardXp + " XP"].filter(Boolean).join(" + ");
-        return "<div class=\"achievement-item " + (unlocked ? "unlocked" : "locked") + "\"><span class=\"achievement-icon\" aria-hidden=\"true\">" + (unlocked ? "✓" : "○") + "</span><div class=\"achievement-body\"><span class=\"achievement-name\">" + escapeHtml(ach.name) + "</span><span class=\"achievement-desc\">" + escapeHtml(ach.desc) + "</span><span class=\"achievement-reward\">Belohnung: " + rewards + "</span></div></div>";
+        return "<div class=\"achievement-item " + (unlocked ? "unlocked" : "locked") + "\"><span class=\"achievement-icon\" aria-hidden=\"true\">" + (unlocked ? "✓" : "○") + "</span><div class=\"achievement-body\"><span class=\"achievement-name\">" + escapeHtml(ach.name) + "</span><span class=\"achievement-desc\">" + escapeHtml(ach.desc) + "</span><span class=\"achievement-reward\">Reward: " + rewards + "</span></div></div>";
       };
-      const openAbgeschlossen = isCategoryOpen("Abgeschlossene Erfolge", tabAch);
-      const openOffen = isCategoryOpen("Offene Erfolge", tabAch);
-      achievementsList.innerHTML = "<div class=\"category-block " + (openAbgeschlossen ? "" : "collapsed") + "\"><div class=\"category-header\" data-category=\"Abgeschlossene Erfolge\" data-tab=\"" + tabAch + "\" role=\"button\" tabindex=\"0\"><span class=\"category-chevron\">" + (openAbgeschlossen ? "▼" : "▶") + "</span><span class=\"category-title\">Abgeschlossene Erfolge</span><span class=\"category-count\">" + unlockedList.length + "</span></div><div class=\"category-content\">" + (unlockedList.length ? unlockedList.map((ach) => renderAchievement(ach, true)).join("") : "<p class=\"achievements-empty\">Noch keine.</p>") + "</div></div><div class=\"category-block " + (openOffen ? "" : "collapsed") + "\"><div class=\"category-header\" data-category=\"Offene Erfolge\" data-tab=\"" + tabAch + "\" role=\"button\" tabindex=\"0\"><span class=\"category-chevron\">" + (openOffen ? "▼" : "▶") + "</span><span class=\"category-title\">Offene Erfolge</span><span class=\"category-count\">" + lockedList.length + "</span></div><div class=\"category-content\">" + (lockedList.length ? lockedList.map((ach) => renderAchievement(ach, false)).join("") : "<p class=\"achievements-empty\">Alle geschafft!</p>") + "</div></div>";
+      const openCompleted = isCategoryOpen("Completed Achievements", tabAch);
+      const openLocked = isCategoryOpen("Open Achievements", tabAch);
+      achievementsList.innerHTML = "<div class=\"category-block " + (openCompleted ? "" : "collapsed") + "\"><div class=\"category-header\" data-category=\"Completed Achievements\" data-tab=\"" + tabAch + "\" role=\"button\" tabindex=\"0\"><span class=\"category-chevron\">" + (openCompleted ? "▼" : "▶") + "</span><span class=\"category-title\">Completed Achievements</span><span class=\"category-count\">" + unlockedList.length + "</span></div><div class=\"category-content\">" + (unlockedList.length ? unlockedList.map((ach) => renderAchievement(ach, true)).join("") : "<p class=\"achievements-empty\">None yet.</p>") + "</div></div><div class=\"category-block " + (openLocked ? "" : "collapsed") + "\"><div class=\"category-header\" data-category=\"Open Achievements\" data-tab=\"" + tabAch + "\" role=\"button\" tabindex=\"0\"><span class=\"category-chevron\">" + (openLocked ? "▼" : "▶") + "</span><span class=\"category-title\">Open Achievements</span><span class=\"category-count\">" + lockedList.length + "</span></div><div class=\"category-content\">" + (lockedList.length ? lockedList.map((ach) => renderAchievement(ach, false)).join("") : "<p class=\"achievements-empty\">All done!</p>") + "</div></div>";
     }
 
     document.querySelectorAll(".tab-search").forEach((input) => {
@@ -290,10 +290,10 @@
     const loaded = G.loadState();
     if (loaded) {
       G.state = loaded;
-      G.addLog("Spielstand geladen.", "");
+      G.addLog("Save game loaded.", "");
     } else {
       G.initGoods();
-      G.addLog("Spiel gestartet. Gebäude produzieren alle " + G.INCOME_INTERVAL_SEC + " Sek. Ressourcen – verkaufe sie am Markt.", "");
+      G.addLog("Game started. Buildings produce every " + G.INCOME_INTERVAL_SEC + " sec. Sell resources on the market.", "");
     }
     G.startIncomeTimer();
     document.querySelector(".tabs").addEventListener("click", (e) => {

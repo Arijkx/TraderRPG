@@ -23,7 +23,7 @@
         G.state.playerLevel += 1;
         G.state.playerXp -= required;
         required = getXpForNextLevel(G.state.playerLevel);
-        addLog("Level aufgestiegen! Jetzt Level " + G.state.playerLevel + ".", "income");
+        addLog("Level up! Now level " + G.state.playerLevel + ".", "income");
       }
     }
   }
@@ -36,7 +36,7 @@
       G.state.achievements.push(ach.id);
       applyAchievementReward(ach.rewardMoney, ach.rewardXp);
       const rewards = [ach.rewardMoney && G.formatMoney(ach.rewardMoney), ach.rewardXp && ach.rewardXp + " XP"].filter(Boolean).join(", ");
-      addLog("Erfolg: " + ach.name + "! Belohnung: " + rewards + ".", "income");
+      addLog("Achievement: " + ach.name + "! Reward: " + rewards + ".", "income");
     });
   }
 
@@ -51,7 +51,7 @@
     if (G.state.day > 365) {
       G.state.day = 1;
       G.state.year += 1;
-      addLog("Neues Jahr! Jahr " + G.state.year + " beginnt.", "income");
+      addLog("New year! Year " + G.state.year + " begins.", "income");
     }
     G.state.playerXp += G.XP_PER_DAY;
     let required = getXpForNextLevel(G.state.playerLevel);
@@ -59,7 +59,7 @@
       G.state.playerLevel += 1;
       G.state.playerXp -= required;
       required = getXpForNextLevel(G.state.playerLevel);
-      addLog("Level aufgestiegen! Jetzt Level " + G.state.playerLevel + ".", "income");
+      addLog("Level up! Now level " + G.state.playerLevel + ".", "income");
     }
     G.GOODS.forEach((g) => {
       const slot = G.state.goods[g.id];
@@ -84,8 +84,8 @@
     const producedLines = Object.entries(produced)
       .map(([id, qty]) => qty + " " + G.GOODS.find((g) => g.id === id).name)
       .join(", ");
-    if (producedLines) addLog("+" + producedLines + " (Gebäude)", "income");
-    addLog("Tag " + G.state.day + ". Marktpreise aktualisiert.", "");
+    if (producedLines) addLog("+" + producedLines + " (buildings)", "income");
+    addLog("Day " + G.state.day + ". Market prices updated.", "");
     checkAchievements();
     lastTickTime = Date.now();
     G.saveState();
@@ -114,7 +114,7 @@
     G.state.stats.boughtOnce = true;
     G.state.money -= cost;
     g.qty += amount;
-    addLog(amount + " " + G.GOODS.find((x) => x.id === goodId).name + " gekauft für " + G.formatMoney(cost), "spend");
+    addLog(amount + " " + G.GOODS.find((x) => x.id === goodId).name + " bought for " + G.formatMoney(cost), "spend");
     checkAchievements();
     G.saveState();
     if (G.render) G.render();
@@ -130,7 +130,7 @@
     G.state.money += revenue;
     g.qty -= sellQty;
     const goodName = G.GOODS.find((x) => x.id === goodId).name;
-    addLog(sellQty + " " + goodName + " verkauft für " + G.formatMoney(revenue), "sell");
+    addLog(sellQty + " " + goodName + " sold for " + G.formatMoney(revenue), "sell");
     checkAchievements();
     G.saveState();
     if (G.render) G.render();
@@ -163,7 +163,7 @@
     }
     const name = G.BUILDING_TYPES[type].name;
     const slot = G.state.buildings[type];
-    addLog(name + (slot.count > 1 ? " x" + slot.count : "") + " gekauft für " + G.formatMoney(cost), "spend");
+    addLog(name + (slot.count > 1 ? " x" + slot.count : "") + " bought for " + G.formatMoney(cost), "spend");
     checkAchievements();
     G.saveState();
     if (G.render) G.render();
@@ -186,7 +186,7 @@
     const name = G.BUILDING_TYPES[type].name;
     if (!G.state.stats) G.state.stats = { soldOnce: false, boughtOnce: false, upgrades: 0 };
     G.state.stats.upgrades = (G.state.stats.upgrades || 0) + 1;
-    addLog(name + " (alle " + slot.count + ") auf Stufe " + slot.level + " verbessert für " + G.formatMoney(cost), "spend");
+    addLog(name + " (all " + slot.count + ") upgraded to level " + slot.level + " for " + G.formatMoney(cost), "spend");
     checkAchievements();
     G.saveState();
     if (G.render) G.render();
