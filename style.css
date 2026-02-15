@@ -638,7 +638,7 @@ html::-webkit-scrollbar-thumb:hover {
 
 .settings-intro {
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: 0.8rem;
   margin-bottom: 1.25rem;
   line-height: 1.5;
 }
@@ -646,7 +646,7 @@ html::-webkit-scrollbar-thumb:hover {
 /* My Real Estate */
 .real-estate-intro {
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   margin-bottom: 1rem;
   line-height: 1.5;
 }
@@ -654,7 +654,7 @@ html::-webkit-scrollbar-thumb:hover {
 .real-estate-empty,
 .real-estate-summary {
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: 0.8rem;
   margin-bottom: 0.75rem;
 }
 
@@ -698,10 +698,19 @@ html::-webkit-scrollbar-thumb:hover {
   gap: 0.85rem;
 }
 
+/* Panel info texts – same size across all tabs */
+.panel-info-text,
 .income-timer-hint {
   font-size: 0.8rem;
   color: var(--text-muted);
+}
+
+.income-timer-hint {
   margin-bottom: 0.25rem;
+}
+
+.panel-info-text {
+  margin: 0 0 0.5rem 0;
 }
 
 .shop-building {
@@ -869,7 +878,7 @@ html::-webkit-scrollbar-thumb:hover {
 /* Log */
 /* Erfolge */
 .achievements-intro {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
   margin-bottom: 1rem;
 }

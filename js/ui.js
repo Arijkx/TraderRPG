@@ -205,7 +205,7 @@
         return { category, entries: list };
       })
       .filter(({ entries }) => entries.length > 0);
-    document.getElementById("buildings-shop").innerHTML = "<p class=\"income-timer-hint\">Buildings produce resources & new day every " + G.INCOME_INTERVAL_SEC + " sec.</p>" + shopCategories.map(({ category, entries }) => {
+    document.getElementById("buildings-shop").innerHTML = "<p class=\"income-timer-hint\">Buildings produce resources & new day every " + G.INCOME_INTERVAL_SEC + " sec. Real estate rent is collected every 7 days.</p>" + shopCategories.map(({ category, entries }) => {
       const open = isCategoryOpen(category, tabShop);
       return "<div class=\"category-block " + (open ? "" : "collapsed") + "\"><div class=\"category-header\" data-category=\"" + escapeHtml(category) + "\" data-tab=\"" + tabShop + "\" role=\"button\" tabindex=\"0\"><span class=\"category-chevron\">" + (open ? "▼" : "▶") + "</span><span class=\"category-title\">" + escapeHtml(category) + "</span></div><div class=\"category-content\">" + entries.map(([type, def]) => {
         const minLevel = G.getBuildingMinLevel(type);
@@ -227,9 +227,9 @@
       .map(({ category, buildings }) => ({ category, buildings: searchMy ? buildings.filter(({ def }) => def.name.toLowerCase().includes(searchMy)) : buildings }))
       .filter(({ buildings }) => buildings.length > 0);
     if (totalBuildingCount === 0) {
-      myBuildings.innerHTML = "<p style='color: var(--text-muted); font-size: 0.9rem;'>No buildings yet. Buy some in the \"Buy Buildings\" section.</p>";
+      myBuildings.innerHTML = "<p class=\"panel-info-text\">No buildings yet. Buy some in the \"Buy Buildings\" section.</p>";
     } else if (myBuildingsCategories.length === 0) {
-      myBuildings.innerHTML = "<p style='color: var(--text-muted); font-size: 0.9rem;'>No production buildings. Your real estate is listed under My Real Estate.</p>";
+      myBuildings.innerHTML = "<p class=\"panel-info-text\">No production buildings. Your real estate is listed under My Real Estate.</p>";
     } else {
       myBuildings.innerHTML = myBuildingsCategories.map(({ category, buildings }) => {
         const open = isCategoryOpen(category, tabMy);
