@@ -495,7 +495,6 @@ html::-webkit-scrollbar-thumb:hover {
 
 .market-row .price-chart-svg {
   display: block;
-  vertical-align: middle;
 }
 
 .market-row .price-chart-empty {
