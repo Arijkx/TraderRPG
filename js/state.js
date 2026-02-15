@@ -19,7 +19,7 @@
   }
 
   let state = {
-    money: 15000,
+    money: 150000,
     day: 1,
     year: 1,
     playerLevel: 1,
