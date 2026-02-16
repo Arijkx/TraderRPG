@@ -218,6 +218,22 @@
     if (G.render) G.render();
   }
 
+  function sellAllFromCategories(categoryNames) {
+    if (!Array.isArray(categoryNames) || categoryNames.length === 0) return;
+    const set = new Set(categoryNames);
+    let soldAny = false;
+    G.GOODS.forEach((g) => {
+      const cat = g.category || "Other";
+      if (!set.has(cat)) return;
+      const slot = G.state.goods[g.id];
+      const qty = slot?.qty ?? 0;
+      if (qty <= 0) return;
+      sellGood(g.id, qty);
+      soldAny = true;
+    });
+    if (soldAny) addLog("Sold all from " + categoryNames.length + " selected categor" + (categoryNames.length === 1 ? "y" : "ies") + ".", "sell");
+  }
+
   function getBuildingCost(type) {
     const def = G.BUILDING_TYPES[type];
     const count = G.state.buildings[type]?.count || 0;
@@ -347,6 +363,7 @@
     updateZeitDisplay,
     buyGood,
     sellGood,
+    sellAllFromCategories,
     getBuildingCost,
     getBuildingMinLevel,
     buyBuilding,

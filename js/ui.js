@@ -209,6 +209,50 @@
     return G.GOODS_CATEGORY_ORDER.filter((c) => map[c]).map((c) => ({ category: c, goods: map[c] }));
   }
 
+  function openMarketOptionsPopup() {
+    const overlay = document.getElementById("market-options-overlay");
+    const container = document.getElementById("market-options-checkboxes");
+    if (!overlay || !container) return;
+    const categories = getGoodsByCategory().map((x) => x.category);
+    const sel = G.uiState.marketSellCategoriesSelected || {};
+    container.innerHTML = categories.map((cat) => {
+      const checked = sel[cat] !== false;
+      return "<label class=\"market-options-row\" data-category=\"" + escapeHtml(cat) + "\"><input type=\"checkbox\" " + (checked ? "checked" : "") + "> " + escapeHtml(cat) + "</label>";
+    }).join("");
+    overlay.style.display = "flex";
+    overlay.setAttribute("aria-hidden", "false");
+    document.body.classList.add("market-options-open");
+  }
+
+  function closeMarketOptionsPopup() {
+    const overlay = document.getElementById("market-options-overlay");
+    const container = document.getElementById("market-options-checkboxes");
+    if (!overlay || !container) return;
+    const sel = G.uiState.marketSellCategoriesSelected || {};
+    container.querySelectorAll("label.market-options-row").forEach((label) => {
+      const cat = label.getAttribute("data-category");
+      if (cat != null) sel[cat] = label.querySelector("input").checked;
+    });
+    G.uiState.marketSellCategoriesSelected = sel;
+    G.saveUiState();
+    overlay.style.display = "none";
+    overlay.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("market-options-open");
+  }
+
+  function getSelectedMarketSellCategories() {
+    const container = document.getElementById("market-options-checkboxes");
+    if (!container) return [];
+    const list = [];
+    container.querySelectorAll("label.market-options-row").forEach((label) => {
+      if (label.querySelector("input").checked) {
+        const cat = label.getAttribute("data-category");
+        if (cat) list.push(cat);
+      }
+    });
+    return list;
+  }
+
   function getBuildingsByCategory() {
     const map = {};
     Object.entries(G.BUILDING_TYPES).forEach(([type, def]) => {
@@ -537,6 +581,26 @@
     if (filterMarketStockCb) filterMarketStockCb.addEventListener("change", function () {
       G.uiState.marketOnlyWithStock = this.checked;
       G.saveUiState();
+      G.render();
+    });
+    const marketOptionsBtn = document.getElementById("market-options-btn");
+    if (marketOptionsBtn) marketOptionsBtn.addEventListener("click", openMarketOptionsPopup);
+    const marketOptionsOverlay = document.getElementById("market-options-overlay");
+    if (marketOptionsOverlay) {
+      marketOptionsOverlay.addEventListener("click", function (e) {
+        if (e.target === marketOptionsOverlay) closeMarketOptionsPopup();
+      });
+      marketOptionsOverlay.addEventListener("wheel", function (e) {
+        if (!e.target.closest(".market-options-modal")) e.preventDefault();
+      }, { passive: false });
+    }
+    const marketOptionsCloseBtn = document.getElementById("market-options-close");
+    if (marketOptionsCloseBtn) marketOptionsCloseBtn.addEventListener("click", closeMarketOptionsPopup);
+    const marketOptionsSellAllBtn = document.getElementById("market-options-sell-all");
+    if (marketOptionsSellAllBtn) marketOptionsSellAllBtn.addEventListener("click", function () {
+      const selected = getSelectedMarketSellCategories();
+      if (selected.length > 0) G.sellAllFromCategories(selected);
+      closeMarketOptionsPopup();
       G.render();
     });
     G.render();

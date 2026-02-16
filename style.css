@@ -261,6 +261,11 @@ html::-webkit-scrollbar-thumb:hover {
   color: var(--text-muted);
   cursor: pointer;
   white-space: nowrap;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-sizing: border-box;
+  min-height: 2.5rem;
 }
 
 .filter-unlocked-label input[type="checkbox"] {
@@ -279,6 +284,7 @@ html::-webkit-scrollbar-thumb:hover {
 .tab-search {
   width: 18rem;
   min-width: 10rem;
+  min-height: 2.5rem;
   padding: 0.5rem 0.75rem;
   font-family: var(--font-sans);
   font-size: 0.9rem;
@@ -707,6 +713,92 @@ html::-webkit-scrollbar-thumb:hover {
 .btn-danger:hover {
   background: #c93c35;
   filter: brightness(1.05);
+}
+
+.btn-market-options {
+  background: var(--surface-hover);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-market-options:hover {
+  background: var(--accent-dim);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+body.market-options-open {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.market-options-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.market-options-modal {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  max-width: 420px;
+  width: 100%;
+  max-height: 85vh;
+  overflow: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.market-options-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+.market-options-desc {
+  margin: 0 0 1rem 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.market-options-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.market-options-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.25rem 0;
+  color: var(--text);
+}
+
+.market-options-row:hover {
+  color: var(--accent);
+}
+
+.market-options-row input {
+  flex-shrink: 0;
+}
+
+.market-options-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 /* Settings */
