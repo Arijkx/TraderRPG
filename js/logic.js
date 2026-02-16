@@ -7,9 +7,10 @@
 
   const MAX_PLAYER_LEVEL = (typeof G.MAX_PLAYER_LEVEL === "number" && G.MAX_PLAYER_LEVEL >= 1) ? G.MAX_PLAYER_LEVEL : 100;
 
+  /** XP needed for next level; curve grows exponentially so high levels need much more. */
   function getXpForNextLevel(level) {
     if (level >= MAX_PLAYER_LEVEL) return Infinity;
-    return 750 * level;
+    return Math.max(1, Math.round(300 * Math.pow(level, 1.6)));
   }
 
   function getSkillRank(skillId) {
@@ -137,8 +138,9 @@
       produced[def.produces] = (produced[def.produces] || 0) + amount;
       xpFromProduction += amount;
     });
-    if (xpFromProduction > 0) {
-      G.state.playerXp += xpFromProduction * (1 + getXpBonus());
+    const actualXpThisDay = xpFromProduction > 0 ? Math.floor(xpFromProduction * (1 + getXpBonus())) : 0;
+    if (actualXpThisDay > 0) {
+      G.state.playerXp += actualXpThisDay;
       while (G.state.playerLevel < MAX_PLAYER_LEVEL && G.state.playerXp >= required) {
         G.state.playerLevel += 1;
         G.state.playerXp -= required;
@@ -162,10 +164,10 @@
       }
     }
     const producedLines = Object.entries(produced)
-      .map(([id, qty]) => qty + " " + G.GOODS.find((g) => g.id === id).name + " (+" + qty + " XP)")
+      .map(([id, qty]) => qty + " " + G.GOODS.find((g) => g.id === id).name)
       .join(", ");
     if (producedLines) addLog("+" + producedLines + " (buildings)", "income");
-    if (xpFromProduction > 0) addLog("+" + xpFromProduction + " XP (production this day)", "income");
+    if (actualXpThisDay > 0) addLog("+" + actualXpThisDay + " XP (production this day)", "income");
     addLog("Day " + G.state.day + ". Market prices updated.", "");
     checkAchievements();
     lastTickTime = Date.now();
