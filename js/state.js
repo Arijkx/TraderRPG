@@ -38,6 +38,7 @@
     categoriesOpen: {},
     searchQueries: { market: "", "buildings-shop": "", "my-buildings": "", resources: "" },
     buildingsShopOnlyUnlocked: false,
+    buildingsShopOnlyAffordable: false,
     resourcesOnlyWithStock: false,
     marketOnlyWithStock: false,
     expandedMarketCharts: {},
@@ -65,13 +66,14 @@
   function getUiState() {
     try {
       const raw = localStorage.getItem(UI_KEY);
-      if (!raw) return { activeTab: "market", categoriesOpen: {}, searchQueries: { market: "", "buildings-shop": "", "my-buildings": "", resources: "" }, buildingsShopOnlyUnlocked: false, resourcesOnlyWithStock: false, marketOnlyWithStock: false, tutorialStep: 0, tutorialCompleted: false, tabScrollPositions: {}, marketSellCategoriesSelected: {} };
+      if (!raw) return { activeTab: "market", categoriesOpen: {}, searchQueries: { market: "", "buildings-shop": "", "my-buildings": "", resources: "" }, buildingsShopOnlyUnlocked: false, buildingsShopOnlyAffordable: false, resourcesOnlyWithStock: false, marketOnlyWithStock: false, tutorialStep: 0, tutorialCompleted: false, tabScrollPositions: {}, marketSellCategoriesSelected: {} };
       const d = JSON.parse(raw);
       return {
         activeTab: d.activeTab || "market",
         categoriesOpen: typeof d.categoriesOpen === "object" && d.categoriesOpen !== null ? d.categoriesOpen : {},
         searchQueries: typeof d.searchQueries === "object" && d.searchQueries !== null ? d.searchQueries : { market: "", "buildings-shop": "", "my-buildings": "", resources: "" },
         buildingsShopOnlyUnlocked: d.buildingsShopOnlyUnlocked === true,
+        buildingsShopOnlyAffordable: d.buildingsShopOnlyAffordable === true,
         resourcesOnlyWithStock: d.resourcesOnlyWithStock === true,
         marketOnlyWithStock: d.marketOnlyWithStock === true,
         tutorialStep: typeof d.tutorialStep === "number" ? d.tutorialStep : 0,
@@ -80,7 +82,7 @@
         marketSellCategoriesSelected: typeof d.marketSellCategoriesSelected === "object" && d.marketSellCategoriesSelected !== null ? d.marketSellCategoriesSelected : {},
       };
     } catch (e) {
-      return { activeTab: "market", categoriesOpen: {}, searchQueries: { market: "", "buildings-shop": "", "my-buildings": "", resources: "" }, buildingsShopOnlyUnlocked: false, resourcesOnlyWithStock: false, marketOnlyWithStock: false, tutorialStep: 0, tutorialCompleted: false, tabScrollPositions: {}, marketSellCategoriesSelected: {} };
+      return { activeTab: "market", categoriesOpen: {}, searchQueries: { market: "", "buildings-shop": "", "my-buildings": "", resources: "" }, buildingsShopOnlyUnlocked: false, buildingsShopOnlyAffordable: false, resourcesOnlyWithStock: false, marketOnlyWithStock: false, tutorialStep: 0, tutorialCompleted: false, tabScrollPositions: {}, marketSellCategoriesSelected: {} };
     }
   }
 

@@ -340,10 +340,12 @@
     const tabShop = "buildings-shop";
     const searchShop = getSearchQuery(tabShop);
     const onlyUnlocked = !!G.uiState.buildingsShopOnlyUnlocked;
+    const onlyAffordable = !!G.uiState.buildingsShopOnlyAffordable;
     const shopCategories = getBuildingsByCategory()
       .map(({ category, entries }) => {
         let list = searchShop ? entries.filter(([, def]) => def.name.toLowerCase().includes(searchShop)) : entries;
         if (onlyUnlocked) list = list.filter(([type]) => G.state.playerLevel >= G.getBuildingMinLevel(type));
+        if (onlyAffordable) list = list.filter(([type]) => G.state.money >= G.getBuildingCost(type));
         list.sort((a, b) => {
           const la = G.getBuildingMinLevel(a[0]), lb = G.getBuildingMinLevel(b[0]);
           if (la !== lb) return la - lb;
@@ -522,6 +524,8 @@
       const tabId = input.dataset.tab;
       if (G.uiState.searchQueries && G.uiState.searchQueries[tabId] !== undefined) input.value = G.uiState.searchQueries[tabId] || "";
     });
+    const filterAffordableEl = document.getElementById("filter-affordable-buildings");
+    if (filterAffordableEl) filterAffordableEl.checked = !!G.uiState.buildingsShopOnlyAffordable;
     const filterUnlockedEl = document.getElementById("filter-unlocked-buildings");
     if (filterUnlockedEl) filterUnlockedEl.checked = !!G.uiState.buildingsShopOnlyUnlocked;
     const filterResourcesStockEl = document.getElementById("filter-resources-stock");
@@ -564,6 +568,12 @@
     });
     document.querySelectorAll(".tab-search").forEach((input) => {
       input.addEventListener("input", function () { setSearchQuery(this.dataset.tab, this.value); });
+    });
+    const filterAffordableCb = document.getElementById("filter-affordable-buildings");
+    if (filterAffordableCb) filterAffordableCb.addEventListener("change", function () {
+      G.uiState.buildingsShopOnlyAffordable = this.checked;
+      G.saveUiState();
+      G.render();
     });
     const filterUnlockedCb = document.getElementById("filter-unlocked-buildings");
     if (filterUnlockedCb) filterUnlockedCb.addEventListener("change", function () {

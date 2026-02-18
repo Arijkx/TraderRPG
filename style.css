@@ -249,6 +249,13 @@ html::-webkit-scrollbar-thumb:hover {
   gap: 1rem;
 }
 
+.panel-filter-divider {
+  width: 1px;
+  height: 1.5rem;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
 .panel-search-wrap {
   flex-shrink: 0;
 }
