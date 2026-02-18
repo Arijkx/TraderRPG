@@ -775,6 +775,25 @@ body.market-options-open {
   line-height: 1.4;
 }
 
+.offline-rewards-summary {
+  margin: 0 0 1.25rem 0;
+  padding: 0.75rem 1rem;
+  background: var(--bg-alt, rgba(255, 255, 255, 0.06));
+  border-radius: 6px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.offline-rewards-summary p {
+  margin: 0 0 0.5rem 0;
+}
+
+.offline-rewards-summary ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
 .market-options-checkboxes {
   display: flex;
   flex-direction: column;

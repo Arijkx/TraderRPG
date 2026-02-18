@@ -538,6 +538,45 @@
     if (G.uiState.tutorialStep > 0) updateTutorialUI();
   }
 
+  const MAX_OFFLINE_DAYS = 30;
+
+  function showOfflineRewardsModal(originalState, finalState, daysPassed) {
+    const daysText = daysPassed === 1 ? "1 day" : daysPassed + " days";
+    const moneyEarned = finalState.money - originalState.money;
+    const goodDeltas = [];
+    G.GOODS.forEach((g) => {
+      const origQ = originalState.goods[g.id]?.qty ?? 0;
+      const finalQ = finalState.goods[g.id]?.qty ?? 0;
+      if (finalQ > origQ) goodDeltas.push({ name: g.name, qty: finalQ - origQ });
+    });
+    let html = "<p><strong>Time passed:</strong> " + escapeHtml(daysText) + "</p>";
+    if (moneyEarned !== 0) {
+      html += "<p><strong>Money earned:</strong> " + (moneyEarned > 0 ? "+" : "") + G.formatMoney(moneyEarned) + "</p>";
+    }
+    if (goodDeltas.length > 0) {
+      html += "<p><strong>Produced resources:</strong></p><ul>";
+      goodDeltas.forEach((d) => {
+        html += "<li>+" + d.qty + " " + escapeHtml(d.name) + "</li>";
+      });
+      html += "</ul>";
+    }
+    const summaryEl = document.getElementById("offline-rewards-summary");
+    if (summaryEl) summaryEl.innerHTML = html;
+    const overlay = document.getElementById("offline-rewards-overlay");
+    if (overlay) {
+      overlay.style.display = "flex";
+      overlay.setAttribute("aria-hidden", "false");
+    }
+  }
+
+  function closeOfflineRewardsModal() {
+    const overlay = document.getElementById("offline-rewards-overlay");
+    if (overlay) {
+      overlay.style.display = "none";
+      overlay.setAttribute("aria-hidden", "true");
+    }
+  }
+
   function init() {
     G.uiState = G.getUiState();
     switchTab(G.uiState.activeTab);
@@ -545,6 +584,22 @@
     if (loaded) {
       G.state = loaded;
       G.addLog("Save game loaded.", "");
+      const lastSave = G.getLastSaveTime();
+      if (lastSave != null) {
+        const offlineSeconds = (Date.now() - lastSave) / 1000;
+        const offlineGameDays = Math.min(MAX_OFFLINE_DAYS, Math.floor(offlineSeconds / G.INCOME_INTERVAL_SEC));
+        if (offlineGameDays >= 1) {
+          const originalState = G.state;
+          G.state = JSON.parse(JSON.stringify(originalState));
+          G._offlineSimulation = true;
+          for (let i = 0; i < offlineGameDays; i++) G.advanceDay();
+          const finalState = G.state;
+          G.state = originalState;
+          G._offlineSimulation = false;
+          window._offlineFinalState = finalState;
+          showOfflineRewardsModal(originalState, finalState, offlineGameDays);
+        }
+      }
     } else {
       G.initGoods();
       G.addLog("Game started. Buildings produce every " + G.INCOME_INTERVAL_SEC + " sec. Sell resources on the market.", "");
@@ -612,6 +667,16 @@
       if (selected.length > 0) G.sellAllFromCategories(selected);
       closeMarketOptionsPopup();
       G.render();
+    });
+    const offlineAcceptBtn = document.getElementById("offline-rewards-accept");
+    if (offlineAcceptBtn) offlineAcceptBtn.addEventListener("click", function () {
+      if (window._offlineFinalState) {
+        G.state = window._offlineFinalState;
+        delete window._offlineFinalState;
+        G.saveState();
+        closeOfflineRewardsModal();
+        G.render();
+      }
     });
     G.render();
     document.body.classList.remove("game-loading");

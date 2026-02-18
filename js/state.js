@@ -54,12 +54,25 @@
 
   const SAVE_KEY = (G.STORAGE_KEY != null && G.STORAGE_KEY !== "") ? G.STORAGE_KEY : "wirtschaftssim_save";
   const UI_KEY = (G.UI_STORAGE_KEY != null && G.UI_STORAGE_KEY !== "") ? G.UI_STORAGE_KEY : "wirtschaftssim_ui";
+  const LAST_SAVE_TIME_KEY = "traderrpg_lastSaveTime";
 
   function saveState() {
     try {
       localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+      localStorage.setItem(LAST_SAVE_TIME_KEY, String(Date.now()));
     } catch (e) {
       console.warn("Speichern fehlgeschlagen:", e);
+    }
+  }
+
+  function getLastSaveTime() {
+    try {
+      const raw = localStorage.getItem(LAST_SAVE_TIME_KEY);
+      if (raw == null || raw === "") return null;
+      const t = parseInt(raw, 10);
+      return Number.isFinite(t) ? t : null;
+    } catch (e) {
+      return null;
     }
   }
 
@@ -96,6 +109,7 @@
     try {
       localStorage.removeItem(SAVE_KEY);
       localStorage.removeItem(UI_KEY);
+      localStorage.removeItem(LAST_SAVE_TIME_KEY);
     } catch (e) {}
   }
 
@@ -178,6 +192,7 @@
     initGoods,
     loadState,
     saveState,
+    getLastSaveTime,
     getUiState,
     saveUiState,
     clearSaveData,

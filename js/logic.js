@@ -171,8 +171,10 @@
     addLog("Day " + G.state.day + ". Market prices updated.", "");
     checkAchievements();
     lastTickTime = Date.now();
-    G.saveState();
-    if (G.render) G.render();
+    if (!G._offlineSimulation) {
+      G.saveState();
+      if (G.render) G.render();
+    }
   }
 
   function updateZeitDisplay() {
